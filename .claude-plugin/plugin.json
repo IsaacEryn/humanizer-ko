@@ -1,14 +1,14 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
-  "name": "humanizer",
-  "description": "Remove signs of AI-generated writing from text, making it sound more natural and human. Based on Wikipedia's \"Signs of AI writing\" guide.",
-  "version": "2.9.1",
+  "name": "humanizer-ko",
+  "description": "한국어 텍스트에서 AI 생성 글의 티를 찾아 제거해 자연스러운 사람의 문장으로 다듬는다. Remove signs of AI-generated writing from Korean text. blader/humanizer의 한국어 재설계판.",
+  "version": "1.0.0",
   "author": {
-    "name": "blader",
-    "url": "https://github.com/blader"
+    "name": "IsaacEryn",
+    "url": "https://github.com/IsaacEryn"
   },
-  "homepage": "https://github.com/blader/humanizer",
-  "repository": "https://github.com/blader/humanizer",
+  "homepage": "https://github.com/IsaacEryn/humanizer-ko",
+  "repository": "https://github.com/IsaacEryn/humanizer-ko",
   "license": "MIT",
-  "keywords": ["writing", "editing", "ai-detection", "humanize", "prose", "style"]
+  "keywords": ["writing", "editing", "ai-detection", "humanize", "prose", "style", "korean", "한국어"]
 }

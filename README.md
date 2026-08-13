@@ -1,230 +1,174 @@
-# Humanizer
+# Humanizer-KO
 
-[![skills.sh installs](https://skills.sh/b/blader/humanizer)](https://skills.sh/blader/humanizer)
+한국어 텍스트에서 AI 생성 글의 티를 찾아 제거하는 에이전트 스킬입니다. [blader/humanizer](https://github.com/blader/humanizer)를 포크해 패턴 전체를 한국어에 맞게 재설계했습니다. 순수 Markdown이라 스킬 형식의 지침을 지원하는 어떤 에이전트 하네스에서도 동작합니다.
 
-A portable agent skill that removes signs of AI-generated writing from text, making it sound more natural and human. It is plain Markdown, so it can run in any harness that supports skill-style instructions.
+**English:** A portable agent skill that removes signs of AI-generated writing from **Korean** text. Forked from [blader/humanizer](https://github.com/blader/humanizer) and redesigned for Korean: English-only tells (em dashes as the sole focus, Title Case, hyphenated compounds) are replaced with Korean-specific ones such as double passives (이중 피동), translationese (번역투), speech-level mixing (문체 혼용), and pronoun/plural overuse. The skill instructions themselves are written in Korean; the runtime artifact is `SKILL.md`.
 
-## Installation
+## 왜 한국어판인가
+
+원본 humanizer의 33개 패턴 중 상당수는 영어 전용입니다. Title Case, 하이픈 복합어, copula 회피 같은 패턴은 한국어에 존재하지 않는 반면, 한국어 AI 출력에는 고유한 티가 있습니다:
+
+- 이중 피동: 「~되어지다」 「~보여지다」
+- 번역투: 「~에 의해」 「그것은/그녀는」 「가장 ~한 것 중 하나」
+- 문체 혼용: 합쇼체·해요체·해라체가 한 글에서 뒤섞임
+- 「~들」 복수 남용, 「~라고 할 수 있다」류 군더더기
+- 「단순한 X가 아니라 Y」 「앞으로의 행보가 기대됩니다」 같은 상투구
+
+이 스킬은 원본의 뼈대(패턴 목록, 오탐 방지, 초안→감사→최종 루프, 사실 날조 금지)를 유지하면서 33개 패턴 전부를 한국어 예시로 다시 썼습니다.
+
+## 설치
 
 ### Skills CLI
 
-Install globally with the cross-agent skills CLI so Humanizer is available in every project:
+크로스 에이전트 skills CLI로 전역 설치하면 모든 프로젝트에서 쓸 수 있습니다:
 
 ```bash
-npx skills add blader/humanizer --global
+npx skills add IsaacEryn/humanizer-ko --global
 ```
 
-Update an existing install:
+업데이트:
 
 ```bash
-npx skills update humanizer --global
+npx skills update humanizer-ko --global
 ```
 
-To install globally into every supported agent harness:
+`--global`을 빼면 프로젝트 로컬로 설치되어 커밋해서 공유할 수 있습니다. 설치 후 에이전트 세션을 새로 시작하거나 스킬을 다시 불러오세요.
+
+### Claude Code 플러그인
+
+```
+/plugin marketplace add IsaacEryn/humanizer-ko
+/plugin install humanizer-ko@humanizer-ko
+```
+
+스킬은 `/humanizer-ko:humanizer-ko`로 호출합니다.
+
+### 수동 설치
+
+런타임 산출물이 `SKILL.md` 하나라서 어떤 하네스에서도 직접 쓸 수 있습니다. 하네스가 스킬 디렉터리를 찾는 곳에 저장소를 두면 됩니다:
 
 ```bash
-npx skills add blader/humanizer --global --agent '*'
+git clone https://github.com/IsaacEryn/humanizer-ko.git /path/to/your/skills/humanizer-ko
 ```
 
-To target one configured harness, pass its agent name:
+Claude Code 전역 스킬로 쓰려면:
 
 ```bash
-npx skills add blader/humanizer --global --agent <agent-name>
+git clone https://github.com/IsaacEryn/humanizer-ko.git ~/Projects/humanizer-ko
+ln -s ~/Projects/humanizer-ko ~/.claude/skills/humanizer-ko
 ```
 
-Omit `--global` for a project-local install that can be committed and shared with collaborators. Start a new agent session or reload skills after installation.
+## 사용법
 
-### Claude Code plugin
-
-Claude Code users can also install Humanizer as a plugin:
+하네스가 스킬을 노출하는 방식대로 호출합니다. 보통 슬래시 명령이나 직접 요청입니다:
 
 ```
-/plugin marketplace add blader/humanizer
-/plugin install humanizer@humanizer
-```
+/humanizer-ko
 
-The skill is then invoked as `/humanizer:humanizer`.
-
-### Manual
-
-Any agent harness can use the skill directly because the runtime artifact is `SKILL.md`. Install it wherever your harness expects skill directories, or copy `SKILL.md` into an existing skill folder.
-
-For example:
-
-```bash
-git clone https://github.com/blader/humanizer.git /path/to/your/skills/humanizer
-```
-
-Or, if you already have this repo cloned:
-
-```bash
-mkdir -p /path/to/your/skills/humanizer
-cp SKILL.md /path/to/your/skills/humanizer/
-```
-
-## Usage
-
-Invoke the skill however your agent harness exposes installed skills. Common forms include a slash command or a direct request:
-
-```
-/humanizer
-
-[paste your text here]
+[여기에 텍스트 붙여넣기]
 ```
 
 ```
-Please humanize this text: [your text]
+이 글을 자연스럽게 다듬어줘: [텍스트]
 ```
 
-Point it at a file and the skill rewrites it in place:
+파일을 가리키면 파일을 제자리에서 고쳐 씁니다:
 
 ```
-Humanize the prose in docs/launch-post.md
+docs/launch-post.md의 산문을 humanizer-ko로 다듬어줘
 ```
 
-### Voice Calibration
+### 문체 보정
 
-To match your personal writing style, provide a sample of your own writing:
+자기 문체를 유지하고 싶으면 본인이 쓴 글 샘플을 함께 줍니다:
 
 ```
-/humanizer
+/humanizer-ko
 
-Here's a sample of my writing for voice matching:
-[paste 2-3 paragraphs of your own writing]
+문체 참고용으로 제가 쓴 글입니다:
+[본인 글 2~3문단]
 
-Now humanize this text:
-[paste AI text to humanize]
+이제 이 텍스트를 다듬어주세요:
+[AI 텍스트]
 ```
 
-The skill will analyze your sentence rhythm, word choices, and quirks, then apply them to the rewrite instead of producing generic "clean" output.
+스킬이 샘플의 문장 리듬, 어휘, 종결어미 습관, 버릇을 분석해 일반적인 「깨끗한」 출력 대신 그 습관을 따라 씁니다.
 
-## Overview
+## 33개 탐지 패턴
 
-Based on [Wikipedia's "Signs of AI writing"](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing) guide, maintained by WikiProject AI Cleanup. This comprehensive guide comes from observations of thousands of instances of AI-generated text.
+### 내용 패턴
 
-The skill also includes a final "obviously AI generated" audit pass and a second rewrite, to catch lingering AI-isms in the first draft.
+| # | 패턴 | Before | After |
+|---|------|--------|-------|
+| 1 | **의의·전환점 부풀리기** | 「지역 문화 발전의 중요한 전환점을 마련했다」 | 「1987년에 개관했다」 |
+| 2 | **저명성·언론 나열** | 「조선일보, 한겨레, KBS, 연합뉴스에 인용」 | 맥락 있는 것만 남기고 나열 삭제 |
+| 3 | **연결어미 부가절** | 「~를 상징하며, ~를 보여주고 있다」 | 사실만 서술 |
+| 4 | **홍보성 언어** | 「빼어난 자연경관을 자랑하는 활기찬 마을」 | 「설악산 남쪽 자락에 있는 마을이다」 |
+| 5 | **모호한 출처** | 「전문가들은」 「일각에서는」 | 실제 출처를 밝히거나 삭제 |
+| 6 | **「과제와 전망」 공식 섹션** | 「그럼에도 불구하고 계속 성장해 나갈 것이다」 | 구체적 사실만 남김 |
 
-Rewrites follow a no-fabrication rule: they never add facts, names, dates, or citations that aren't in the source text. Specificity has to come from the source or the author, not from the rewrite.
+### 언어·문법 패턴
 
-### Key Insight from Wikipedia
+| # | 패턴 | Before | After |
+|---|------|--------|-------|
+| 7 | **AI 어휘 남용** | 다양한, 핵심적인, 활용, 자리매김, 시너지 | 평이한 단어로 교체 |
+| 8 | **서술어 부풀리기** | 「~로 자리잡고 있다」 「~를 보유하고 있다」 | 「~이다」 「~있다」 |
+| 9 | **부정 병렬** | 「단순한 노래가 아니라 하나의 선언이다」 | 주장을 직접 서술 |
+| 10 | **삼분법 남용** | 「혁신과 영감, 그리고 통찰」 | 실제 개수대로 서술 |
+| 11 | **동의어 순환** | 주인공→주요 인물→중심 인물→영웅 | 같은 대상은 같은 말로 |
+| 12 | **가짜 범위** | 「빅뱅부터 암흑물질의 춤에 이르기까지」 | 실제 항목을 나열 |
+| 13 | **피동 남용·이중 피동** | 「기대되어진다」 「보존되어지며」 | 능동 또는 올바른 피동 |
 
-> "LLMs use statistical algorithms to guess what should come next. The result tends toward the most statistically likely result that applies to the widest variety of cases."
+### 문체 패턴
 
-## 33 Patterns Detected (with Before/After Examples)
+| # | 패턴 | Before | After |
+|---|------|--------|-------|
+| 14 | **줄표 남용** | 「반복된다 — 지금까지도」 | 쉼표·마침표·괄호로 대체 |
+| 15 | **굵은 글씨 남용** | 「**OKR**, **KPI**, **BMC**를 결합」 | 강조 없이 서술 |
+| 16 | **굵은 머리말 목록** | 「- **성능:** 성능이 향상되었습니다」 | 문장으로 통합 |
+| 17 | **문체 혼용·명사형 종결** | 「백업합니다 / 바꿀 수 있어요 / 보관됨」 | 문체 통일 |
+| 18 | **이모지 장식** | 「🚀 **출시 단계:** ~」 | 이모지 제거, 문장화 |
+| 19 | **번역투 대명사·「~들」** | 「사용자들이 그들의 파일들을」 | 「사용자가 파일을」 |
 
-### Content Patterns
+### 커뮤니케이션 패턴
 
-| # | Pattern | Before | After |
-|---|---------|--------|-------|
-| 1 | **Significance inflation** | "marking a pivotal moment in the evolution of..." | "was established in 1989 as part of a wider decentralization" |
-| 2 | **Notability name-dropping** | "cited in NYT, BBC, FT, and The Hindu" | Trim the list; keep only sourced context |
-| 3 | **Superficial -ing analyses** | "symbolizing... reflecting... showcasing..." | Remove, or keep only what the source supports |
-| 4 | **Promotional language** | "nestled within the breathtaking region" | "is a town in the Gonder region" |
-| 5 | **Vague attributions** | "Experts believe it plays a crucial role" | Name a real source or cut the claim |
-| 6 | **Formulaic challenges** | "Despite challenges... continues to thrive" | Keep the sourced facts; cut the boosterism |
+| # | 패턴 | Before | After |
+|---|------|--------|-------|
+| 20 | **대화 잔여물** | 「도움이 되셨길 바랍니다!」 | 내용만 남김 |
+| 21 | **면책·추측 메우기** | 「공개되어 있지 않으나 ~로 추정된다」 | 모르면 모른다고 쓰거나 삭제 |
+| 22 | **아부 톤** | 「좋은 질문입니다! 탁월한 관점입니다」 | 내용만 서술 |
 
-### Language Patterns
+### 군더더기와 완곡
 
-| # | Pattern | Before | After |
-|---|---------|--------|-------|
-| 7 | **AI vocabulary** | "Actually... additionally... testament... landscape... showcasing" | "also... remain common" |
-| 8 | **Copula avoidance** | "serves as... features... boasts" | "is... has" |
-| 9 | **Negative parallelisms / tailing negations** | "It's not just X, it's Y", "..., no guessing" | State the point directly |
-| 10 | **Rule of three** | "innovation, inspiration, and insights" | Use natural number of items |
-| 11 | **Synonym cycling** | "protagonist... main character... central figure... hero" | "protagonist" (repeat when clearest) |
-| 12 | **False ranges** | "from the Big Bang to dark matter" | List topics directly |
-| 13 | **Passive voice / subjectless fragments** | "No configuration file needed" | Name the actor when it helps clarity |
+| # | 패턴 | Before | After |
+|---|------|--------|-------|
+| 23 | **군더더기 표현** | 「~에 있어서」 「~라고 할 수 있다」 | 「~에서」 「~이다」 |
+| 24 | **과잉 완곡** | 「어쩌면 ~일 수도 있을 것으로 보입니다」 | 「~일 수 있다」 |
+| 25 | **상투적 긍정 마무리** | 「앞으로의 행보가 기대됩니다」 | 삭제, 구체적 사실로 끝냄 |
+| 26 | **번역투 구문** | 「~에 의해 작성」 「가장 ~한 것 중 하나」 | 자연스러운 한국어 문형 |
+| 27 | **권위 수사** | 「진짜 문제는」 「본질적으로」 | 격식 걷어내고 주장만 |
+| 28 | **예고 문장** | 「지금부터 ~를 알아보겠습니다」 | 바로 내용 시작 |
+| 29 | **머리말 뒤 한 줄 되풀이** | 제목 아래 「속도는 중요하다」 | 되풀이 삭제 |
+| 30 | **변경 이력 서술** | 「기존 방식을 대체하기 위해 추가되었다」 | 현재 상태를 설명 |
+| 31 | **단문 연타** | 「없었다. 없었다. 사라졌다.」 | 자연스러운 호흡으로 |
+| 32 | **경구 공식** | 「대칭은 신뢰의 언어다」 | 구체적 주장으로 교체 |
+| 33 | **가짜 솔직 오프닝** | 「솔직히 말해서, 그건 ~에 달렸습니다」 | 그냥 그 말을 함 |
 
-### Style Patterns
+## 동작 원리
 
-| # | Pattern | Before | After |
-|---|---------|--------|-------|
-| 14 | **Em/en dashes** | "institutions—not the people—yet this continues—" | Cut them: periods, commas, colons, or parentheses |
-| 15 | **Boldface overuse** | "**OKRs**, **KPIs**, **BMC**" | "OKRs, KPIs, BMC" |
-| 16 | **Inline-header lists** | "**Performance:** Performance improved" | Convert to prose |
-| 17 | **Title Case Headings** | "Strategic Negotiations And Partnerships" | "Strategic negotiations and partnerships" |
-| 18 | **Emojis** | "🚀 Launch Phase: 💡 Key Insight:" | Remove emojis |
-| 19 | **Curly quotes** | `said “the project”` | `said "the project"` |
-| 26 | **Hyphenated word pairs** | “cross-functional, data-driven, client-facing” | Drop hyphens on common word pairs |
-| 27 | **Persuasive authority tropes** | "At its core, what matters is..." | State the point directly |
-| 28 | **Signposting announcements** | "Let's dive in", "Here's what you need to know" | Start with the content |
-| 29 | **Fragmented headers** | "## Performance" + "Speed matters." | Let the heading do the work |
-| 30 | **Diff-anchored writing** | "This function was added to replace..." | Describe what it does, not what changed |
-| 31 | **Manufactured punchlines / staccato drama** | "It had no preference. No prior. No nostalgia." | Use varied sentence lengths and concrete claims |
-| 32 | **Aphorism formulas** | "Symmetry is the language of trust" | Replace the formula with the actual claim |
-| 33 | **Conversational rhetorical openers** | "Honestly? It depends..." | Remove the fake-candid setup |
+- **오탐 방지**: 일관된 합쇼체, 피동문, 만연체, 한자어 문어체는 한국어의 정상적인 글쓰기이지 AI 티가 아닙니다. 티 하나가 아니라 **군집**으로 판정합니다.
+- **감사 루프**: 초안을 쓴 뒤 「아직 AI 티가 나는 이유」와 「원문에 없는 사실이 들어갔는가」를 자문하고 최종본으로 고칩니다.
+- **사실 날조 금지**: 재작성본은 원문에 없는 사실·이름·숫자·날짜·출처를 추가하지 않습니다. 구체성은 원문이나 저자에게서 와야 합니다.
+- **문체 보정**: 사용자 글 샘플이 있으면 스킬의 규칙보다 샘플의 습관이 우선합니다.
 
-### Communication Patterns
+## 원본과의 관계
 
-| # | Pattern | Before | After |
-|---|---------|--------|-------|
-| 20 | **Chatbot artifacts** | "I hope this helps! Let me know if..." | Remove entirely |
-| 21 | **Cutoff disclaimers** | "While details are limited in available sources..." | Find sources or remove |
-| 22 | **Sycophantic tone** | "Great question! You're absolutely right!" | Respond directly |
+[blader/humanizer](https://github.com/blader/humanizer) v2.9.1을 기반으로 하며, 원본은 WikiProject AI Cleanup이 관리하는 [Wikipedia:Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing)에 바탕을 둡니다. 한국어에 그대로 적용되지 않는 패턴(§14 em dash 단독 초점, §17 Title Case, §19 곱슬 따옴표, §26 하이픈 복합어)은 한국어 고유 티(문장부호 전반, 문체 혼용, 번역투 대명사·복수, 번역투 구문)로 교체했습니다. 나머지 패턴은 개념을 유지하되 감시 표현과 예시를 전부 한국어로 다시 썼습니다.
 
-### Filler and Hedging
+## 버전 이력
 
-| # | Pattern | Before | After |
-|---|---------|--------|-------|
-| 23 | **Filler phrases** | "In order to", "Due to the fact that" | "To", "Because" |
-| 24 | **Excessive hedging** | "could potentially possibly" | "may" |
-| 25 | **Generic conclusions** | "The future looks bright" | Specific plans or facts |
+- **1.0.0** (2026-08-13): 최초 공개. blader/humanizer v2.9.1을 포크해 33개 패턴 전체를 한국어 전용으로 재설계. 영어 전용 패턴 4개(§14 일부, §17, §19, §26)를 이중 피동·문체 혼용·번역투 패턴으로 교체하고, 오탐 방지 가이드를 한국어 글쓰기 관습(합쇼체, 피동, 만연체, 한자어 문어체)에 맞게 다시 작성. 지침 본문을 한국어로 전환.
 
-## Full Example
+## 라이선스
 
-*(Illustration note: the rewrite below adds specifics, like the month and the neighborhoods, that stand in for details the author would supply. In a real session those come from the user; the skill asks rather than invents.)*
-
-**Before (AI-sounding):**
-> I recently spent five unforgettable days in Lisbon, and let me tell you — this city completely stole my heart. From the moment I arrived, I knew I was somewhere truly special.
->
-> Nestled along the banks of the Tagus River, Lisbon stands as a vibrant testament to Portugal's enduring spirit, where rich history and modern energy intertwine at every turn. Yes, the famous hills are challenging — my legs certainly felt it! — but every climb rewards you with breathtaking, panoramic views that make it all worthwhile.
->
-> No trip would be complete without riding the iconic Tram 28, winding through the city's most historic neighborhoods. And the food? Simply divine. The original pastéis de nata at Pastéis de Belém are a beloved national treasure, and savoring one still warm was a moment I will never forget.
->
-> But what truly makes Lisbon special isn't just the sights — it's the feeling. Wander a few steps off the main squares and you'll discover a quieter, more authentic side: sun-drenched alleys, charming tiled facades, and friendly locals going about their daily lives, inviting you to slow down and savor every moment.
->
-> Of course, the must-see São Jorge Castle offers stunning views over the rooftops below. The queues can be long, but the experience is absolutely worth it for any history buff or curious traveler.
->
-> Would I go back? Absolutely. Lisbon isn't just a place to visit — it's a place to fall in love with, again and again. If you're dreaming of your next getaway, this is one destination that promises memories to last a lifetime. ✨
-
-**After (Humanized):**
-> I spent five days in Lisbon last October and still have mixed feelings about it. Beautiful, yes. Also harder on the knees than anyone warned me.
->
-> The hills are the whole story and somehow never make the brochures. My hotel was up in Alfama, which photographs beautifully and translates, in practice, to climbing what felt like a six-story staircase every time I wanted coffee. By the second day my calves had opinions. I started planning each walk around which way was downhill, which is a strange way to see a city but probably an honest one.
->
-> Everyone says to ride Tram 28, so I did, wedged against a stranger's backpack for forty minutes while three tour groups filmed the same corner. I would walk the route next time, or go before breakfast. The custard tarts, though, earn the fuss. I had one at a plain little place in Graça, still warm, and for about thirty seconds I understood why people build trips around pastry.
->
-> What I did not expect was how quiet the city gets away from the main squares. Two blocks uphill from any plaza it turns into laundry lines, chipped tile, open windows, and old men watching football with the sound turned up. That is the Lisbon I keep thinking about, not the castle.
->
-> The castle is fine. The view is great, the queue is long, and I spent more time shuffling toward the entrance than looking at anything once I got inside. If I had only two days, I would trade it for an afternoon of getting lost.
->
-> I would go back, but in spring and with better shoes. Lisbon does not bend over backward to make things easy for you. I think I liked that, even when my legs disagreed.
-
-## References
-
-- [Wikipedia: Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing) - Primary source
-- [WikiProject AI Cleanup](https://en.wikipedia.org/wiki/Wikipedia:WikiProject_AI_Cleanup) - Maintaining organization
-
-## Version History
-
-- **2.9.1** - Improved distribution and portability: removed nonportable frontmatter and tool preapprovals, made global installation the documented default, added package validation, and removed the duplicated long-form example from the runtime prompt. No change to the 33 patterns.
-- **2.9.0** - Added a no-fabrication rule: rewrites may not invent facts, names, dates, or citations not present in the source, and every example that modeled invented specifics was re-cut to use only source information (fixes #187). Replaced paragraph-count parity with an information-over-shape rule, made a user's voice sample outrank the em dash ban, and added invocation modes (pasted text / file / embedded). No change to the 33 patterns.
-- **2.8.3** - Moved the skill version from the unsupported top-level frontmatter key to `metadata.version` for Agent Skills and Claude compatibility. No change to the 33 patterns.
-- **2.8.2** - Replaced the full before/after example with a first-person Lisbon trip recap. The after now keeps the same topic, perspective, and rough length as the before while removing the AI tells without becoming clipped or slogan-like. No change to the 33 patterns.
-- **2.8.1** - Added cross-agent installation docs, optional Claude Code plugin packaging, and a compact secondhand-text false-positive guard. No change to the 33 patterns.
-- **2.8.0** - Added style/cadence patterns #31-33 for manufactured punchlines, aphorism formulas, and conversational rhetorical openers; expanded #20 to catch offer-to-continue chatbot closers. 33 patterns total.
-- **2.7.0** - Added pattern #30 (diff-anchored writing); made em/en dashes a hard cut rather than "overuse"; expanded #21 to cover speculative gap-filling ("maintains a low profile"). 30 patterns total.
-- **2.6.0** - Cleanup pass: consolidated the duplicated workflow sections, gated the personality guidance to content where voice is wanted, removed the model-fingerprinting subsection, and condensed the worked example. No change to the 29 patterns.
-- **2.5.1** - Added a passive-voice / subjectless-fragment rule, raising the total to 29 patterns
-- **2.5.0** - Added patterns for persuasive framing, signposting, and fragmented headers; expanded negative parallelisms to cover tailing negations; tightened wording around em dash overuse; fixed frontmatter wording to use "filler phrases"
-- **2.4.0** - Added voice calibration: match the user's personal writing style from samples
-- **2.3.0** - Added pattern #25: hyphenated word pair overuse
-- **2.2.0** - Added a final "obviously AI generated" audit + second-pass rewrite prompts
-- **2.1.1** - Fixed pattern #18 example (curly quotes vs straight quotes)
-- **2.1.0** - Added before/after examples for all 24 patterns
-- **2.0.0** - Complete rewrite based on raw Wikipedia article content
-- **1.0.0** - Initial release
-
-## License
-
-MIT
+MIT. 원저작자 [blader](https://github.com/blader)의 라이선스를 유지합니다.

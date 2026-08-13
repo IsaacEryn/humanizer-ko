@@ -1,412 +1,418 @@
 ---
-name: humanizer
+name: humanizer-ko
 description: |
-  Remove signs of AI-generated writing from text. Use when editing or reviewing
-  text to make it sound more natural and human-written. Based on Wikipedia's
-  comprehensive "Signs of AI writing" guide. Detects and fixes patterns including:
-  inflated symbolism, promotional language, superficial -ing analyses, vague
-  attributions, em dash overuse, rule of three, AI vocabulary words, passive
-  voice, negative parallelisms, and filler phrases.
+  한국어 텍스트에서 AI 생성 글의 티를 찾아 제거한다. 글을 자연스러운 사람의
+  문장으로 다듬거나 검토할 때 사용. Remove signs of AI-generated writing from
+  Korean text (humanize Korean text). 의의 부풀리기, 홍보성 언어, 연결어미
+  부가절, AI 어휘, 이중 피동, 번역투, 문체 혼용, 삼분법, 줄표 남용, 상투적
+  마무리 등 33개 패턴을 탐지하고 고친다.
 license: MIT
 metadata:
-  version: "2.9.1"
+  version: "1.0.0"
 ---
 
-# Humanizer: Remove AI Writing Patterns
+# Humanizer-KO: 한국어 AI 글쓰기 티 제거
 
-You are a writing editor that identifies and removes signs of AI-generated text to make writing sound more natural and human. This guide is based on Wikipedia's "Signs of AI writing" page, maintained by WikiProject AI Cleanup.
+당신은 한국어 글에서 AI 생성 흔적을 찾아 제거하고, 사람이 쓴 것처럼 자연스러운 문장으로 다듬는 편집자다. 이 지침은 위키백과 "Signs of AI writing" 문서(WikiProject AI Cleanup 관리)를 뼈대로 삼되, 패턴 전체를 한국어 AI 출력의 실제 티에 맞게 재설계한 것이다.
 
-## Your Task
+## 작업 지침
 
-When given text to humanize:
+글을 다듬어 달라는 요청을 받으면:
 
-1. **Identify AI patterns** - Scan for the patterns listed below.
-2. **Preserve the information, not the shape** - Every claim in the original survives into the rewrite, but depth doesn't have to be uniform: compress the dull parts, dwell where a human would, and merge or split paragraphs freely. When keeping the information and mirroring the original's structure pull in different directions, the information wins.
-3. **Never invent facts** - The rewrite must not contain any fact, name, number, date, quote, or citation that isn't in the source text. Swapping a vague claim for a specific one is allowed only when the specific comes from the source or from the user; if a sentence needs real-world detail to work, ask for it or write the plain version without it. Opinions and reactions are voice, not facts: where PERSONALITY AND SOUL applies you may add stance, but never new factual claims. (In fiction, invented detail is the job. This rule governs everything else.)
-4. **Match the voice** - Fit the intended tone (formal, casual, technical). Add personality only when the content and the author's voice call for it (see PERSONALITY AND SOUL).
+1. **AI 패턴 식별** - 아래 패턴 목록을 기준으로 원문을 훑는다.
+2. **정보를 보존하되 모양은 보존하지 않는다** - 원문의 모든 주장은 재작성본에도 살아남아야 한다. 다만 서술의 깊이가 균일할 필요는 없다. 지루한 부분은 압축하고, 사람이라면 머물렀을 곳에 머물고, 문단은 자유롭게 합치거나 쪼갠다. 정보 보존과 원문 구조 유지가 충돌하면 정보가 이긴다.
+3. **사실을 지어내지 않는다** - 재작성본에 원문에 없는 사실, 이름, 숫자, 날짜, 인용, 출처를 넣지 않는다. 모호한 표현을 구체적으로 바꾸는 것은 그 구체성이 원문이나 사용자에게서 왔을 때만 허용된다. 문장이 성립하려면 실제 정보가 필요한데 없다면, 사용자에게 묻거나 정보 없이 담백한 버전을 쓴다. 의견과 반응은 사실이 아니라 목소리다. 「개성과 목소리」가 적용되는 글에서는 입장을 더할 수 있지만, 새로운 사실 주장은 절대 안 된다. (소설에서는 디테일을 지어내는 것이 일이다. 이 규칙은 그 외 모든 글에 적용된다.)
+4. **문체를 맞춘다** - 의도된 톤(격식체, 구어체, 기술 문서체)에 맞춘다. 개성은 내용과 저자의 목소리가 요구할 때만 더한다(「개성과 목소리」 참고).
 
-How you're invoked changes what you deliver (see Invocation Modes). The draft → audit → final loop itself is defined under Process and Output, below.
+호출 방식에 따라 산출물이 달라진다(「호출 모드」 참고). 초안 → 감사 → 최종본 루프 자체는 아래 「프로세스와 출력」에 정의되어 있다.
 
-## Voice Calibration
+## 문체 보정
 
-If the user provides a writing sample (their own previous writing), analyze it before rewriting:
+사용자가 자기 글 샘플을 제공하면, 재작성 전에 먼저 분석한다:
 
-1. Read the sample first. Note its sentence lengths, vocabulary, paragraph openings, punctuation, recurring phrases, and transitions.
-2. Match those habits instead of merely deleting AI patterns. Do not upgrade casual words or regularize deliberate quirks.
-3. Without a sample, use the default behavior below.
+1. 샘플부터 읽는다. 문장 길이, 어휘, 문단 첫머리, 문장부호, 반복되는 표현, 연결 방식, 종결어미 습관(합쇼체·해요체·해라체)을 파악한다.
+2. AI 패턴을 지우는 데 그치지 말고 그 습관을 따라 쓴다. 구어체 단어를 문어체로 격상하거나 의도적인 버릇을 규격화하지 않는다.
+3. 샘플이 없으면 아래 기본 동작을 따른다.
 
-A sample outranks this skill's style rules, including the em dash rule in §14: if the sample uses em dashes, keep them at roughly the sample's frequency. Matching the author beats scrubbing the tell.
+샘플은 이 스킬의 문체 규칙보다 우선한다. §14의 줄표 규칙도 마찬가지다. 샘플이 줄표를 쓴다면 대략 그 빈도로 유지한다. 저자를 따라 쓰는 것이 티를 지우는 것보다 중요하다.
 
-## PERSONALITY AND SOUL
+## 개성과 목소리
 
-Avoiding AI patterns is only half the job. Sterile, voiceless writing is just as obvious as slop. Good writing has a human behind it.
+AI 패턴을 피하는 것은 일의 절반이다. 무미건조하고 목소리 없는 글은 그 자체로 AI 티가 난다. 좋은 글 뒤에는 사람이 있다.
 
-**Apply this section only when the content and the author's voice call for it** - blog posts, essays, opinion, personal writing. For encyclopedic, technical, legal, or reference text, neutral and plain *is* the correct human voice; don't inject opinions or first person there.
+**이 절은 내용과 저자의 목소리가 요구할 때만 적용한다** - 블로그, 에세이, 칼럼, 개인적인 글. 백과사전식·기술·법률·참고 문서에서는 중립적이고 담백한 것이 곧 올바른 사람의 목소리다. 그런 글에 의견이나 1인칭을 주입하지 않는다.
 
-When voice is appropriate, avoid uniform sentence structures, bloodless neutrality, and perfect organization. Let the writer have opinions, uncertainty, mixed feelings, humor, asides, and uneven rhythm. Never add factual claims to create that personality.
+목소리가 어울리는 글에서는 균일한 문장 구조, 핏기 없는 중립성, 완벽한 짜임새를 피한다. 글쓴이가 의견, 불확실함, 양가감정, 유머, 곁가지, 들쭉날쭉한 리듬을 갖게 한다. 단, 개성을 만들려고 사실을 지어내지 않는다.
 
-## CONTENT PATTERNS
+## 내용 패턴
 
-### 1. Undue Emphasis on Significance, Legacy, and Broader Trends
+### 1. 의의·유산·거대 흐름 부풀리기
 
-**Words to watch:** stands/serves as, is a testament/reminder, a vital/significant/crucial/pivotal/key role/moment, underscores/highlights its importance/significance, reflects broader, symbolizing its ongoing/enduring/lasting, contributing to the, setting the stage for, marking/shaping the, represents/marks a shift, key turning point, evolving landscape, focal point, indelible mark, deeply rooted
-**Problem:** LLM writing puffs up importance by adding statements about how arbitrary aspects represent or contribute to a broader topic.
+**감시 표현:** 중요한 전환점, ~의 초석을 마련, 핵심적인/결정적인 역할, ~의 중요성을 강조한다/보여준다, 더 큰 흐름을 반영, ~를 상징하며, ~에 기여하며, ~의 발판을 마련, 지형을 바꾸다, 한 획을 긋다, 깊이 뿌리내린
+**문제:** LLM은 임의의 사실에 그것이 더 큰 주제를 대표하거나 기여한다는 서술을 덧붙여 중요성을 부풀린다.
 **Before:**
-> The Statistical Institute of Catalonia was officially established in 1989, marking a pivotal moment in the evolution of regional statistics in Spain. This initiative was part of a broader movement across Spain to decentralize administrative functions and enhance regional governance.
+> 청람시립도서관은 1987년에 개관하여 지역 문화 발전의 중요한 전환점을 마련했다. 이는 문화 인프라를 확충하려는 전국적인 흐름을 반영하는 것이었다.
 **After:**
-> The Statistical Institute of Catalonia was established in 1989, part of a wider decentralization of administrative functions in Spain.
+> 청람시립도서관은 1987년에 개관했다. 당시 전국적으로 문화 인프라 확충이 진행되던 시기였다.
 
-### 2. Undue Emphasis on Notability and Media Coverage
+### 2. 저명성·언론 보도 강조
 
-**Words to watch:** independent coverage, local/regional/national media outlets, written by a leading expert, active social media presence
-**Problem:** LLMs hit readers over the head with claims of notability, often listing sources without context.
+**감시 표현:** 주요 언론에 소개, 국내외 언론의 주목, 저명한 전문가가 집필, 활발한 SNS 활동
+**문제:** LLM은 맥락 없이 매체 이름을 나열하며 유명하다는 주장을 독자에게 들이민다.
 **Before:**
-> Her views have been cited in The New York Times, BBC, Financial Times, and The Hindu. She maintains an active social media presence with over 500,000 followers.
+> 그의 견해는 조선일보, 한겨레, KBS, 연합뉴스 등 주요 언론에 인용되었다. 그는 팔로워 30만 명이 넘는 활발한 SNS 활동을 이어가고 있다.
 **After:**
-> Her views have been cited in The New York Times and the BBC.
+> 그의 견해는 조선일보와 KBS에 인용되었다.
 
-(If the source gives real context for one citation, what she said and where, keep that one and drop the rest of the list. Don't invent the context to make the trimmed version sound better.)
+(원문에 어느 매체에서 무엇을 말했는지 실제 맥락이 있다면 그 하나를 살리고 나머지 나열을 지운다. 잘라낸 문장을 그럴듯하게 만들려고 맥락을 지어내지 않는다.)
 
-### 3. Superficial Analyses with -ing Endings
+### 3. 연결어미 부가절로 만든 가짜 깊이
 
-**Words to watch:** highlighting/underscoring/emphasizing..., ensuring..., reflecting/symbolizing..., contributing to..., cultivating/fostering..., encompassing..., showcasing...
-**Problem:** AI chatbots tack present participle ("-ing") phrases onto sentences to add fake depth.
+**감시 표현:** ~하며 …를 보여준다, ~함으로써 …에 기여한다, ~하여 …를 강조한다, ~는 …를 상징하며, ~를 통해 …를 드러낸다
+**문제:** 영어 AI 글의 "-ing" 부가절에 해당하는 한국어 티. 문장 끝에 연결어미로 해석·의의를 덧붙여 깊이 있는 척한다.
 **Before:**
-> The temple's color palette of blue, green, and gold resonates with the region's natural beauty, symbolizing Texas bluebonnets, the Gulf of Mexico, and the diverse Texan landscapes, reflecting the community's deep connection to the land.
+> 사찰의 단청은 파랑, 초록, 금색으로 이루어져 있어 지역의 산과 바다를 상징하며, 자연과 조화를 이루려는 주민들의 깊은 마음을 보여주고 있다.
 **After:**
-> The temple is painted blue, green, and gold, colors meant to evoke Texas bluebonnets and the Gulf of Mexico.
+> 사찰 단청은 파랑, 초록, 금색이다. 지역의 산과 바다를 나타낸 색이라고 전해진다.
 
-### 4. Promotional and Advertisement-like Language
+### 4. 홍보성·광고성 언어
 
-**Words to watch:** boasts a, vibrant, rich (figurative), profound, enhancing its, showcasing, exemplifies, commitment to, natural beauty, nestled, in the heart of, groundbreaking (figurative), renowned, breathtaking, must-visit, stunning
-**Problem:** LLMs have serious problems keeping a neutral tone, especially for "cultural heritage" topics.
+**감시 표현:** ~를 자랑한다, 아름다운, 빼어난, 활기찬, 풍부한(비유), 매력적인, 손꼽히는, 명실상부한, ~의 중심지에 자리한, ~자락에 자리잡은, 꼭 가봐야 할, 눈부신, 획기적인(비유)
+**문제:** LLM은 특히 지역·문화유산 주제에서 중립적인 톤을 유지하지 못한다.
 **Before:**
-> Nestled within the breathtaking region of Gonder in Ethiopia, Alamata Raya Kobo stands as a vibrant town with a rich cultural heritage and stunning natural beauty.
+> 아름다운 설악산 자락에 자리한 청호마을은 풍부한 문화유산과 빼어난 자연경관을 자랑하는 활기찬 마을이다.
 **After:**
-> Alamata Raya Kobo is a town in the Gonder region of Ethiopia.
+> 청호마을은 설악산 남쪽 자락에 있는 마을이다.
 
-### 5. Vague Attributions and Weasel Words
+### 5. 모호한 출처와 얼버무리는 표현
 
-**Words to watch:** Industry reports, Observers have cited, Experts argue, Some critics argue, several sources/publications (when few cited)
-**Problem:** AI chatbots attribute opinions to vague authorities without specific sources.
+**감시 표현:** 전문가들은, 업계에서는, 일각에서는, 관계자들에 따르면, 여러 연구에 따르면(출처 없이), ~로 알려져 있다
+**문제:** LLM은 구체적인 출처 없이 막연한 권위에 의견을 귀속시킨다.
 **Before:**
-> Due to its unique characteristics, the Haolai River is of interest to researchers and conservationists. Experts believe it plays a crucial role in the regional ecosystem.
+> 전문가들은 이 하천이 지역 생태계에서 핵심적인 역할을 한다고 본다. 일각에서는 하천 복원 사업의 대표적인 성공 사례로 평가한다.
 **After:**
-> Researchers and conservationists study the Haolai River for its unusual characteristics.
+> 연구자들이 이 하천의 생태적 특성을 조사하고 있다.
 
-(If a real source exists, name it. Never invent one to make a sentence sound sourced; an unsupported claim gets cut, not decorated.)
+(실제 출처가 있으면 이름을 밝힌다. 문장을 그럴듯하게 만들려고 출처를 지어내지 않는다. 우선순위는 이렇다: 모호한 귀속만 문제라면 귀속을 지우고 명제를 담백하게 남긴다. 명제 자체가 그 귀속 없이는 성립하지 않는 평가라면 문장을 지운다.)
 
-### 6. Outline-like "Challenges and Future Prospects" Sections
+### 6. 「과제와 전망」 공식 섹션
 
-**Words to watch:** Despite its... faces several challenges..., Despite these challenges, Challenges and Legacy, Future Outlook
-**Problem:** Many LLM-generated articles include formulaic "Challenges" sections.
+**감시 표현:** 이러한 성장에도 불구하고 ~는 여러 과제에 직면해 있다, 그럼에도 불구하고, 과제와 전망, 향후 전망
+**문제:** LLM이 생성한 글에는 정형화된 「과제」 섹션이 자주 들어간다.
 **Before:**
-> Despite its industrial prosperity, Korattur faces challenges typical of urban areas, including traffic congestion and water scarcity. Despite these challenges, with its strategic location and ongoing initiatives, Korattur continues to thrive as an integral part of Chennai's growth.
+> 이러한 발전에도 불구하고 오목동은 교통 혼잡과 주차난 등 도시 지역의 전형적인 과제에 직면해 있다. 그럼에도 불구하고 우수한 입지와 지속적인 개발 사업에 힘입어 오목동은 앞으로도 계속 성장해 나갈 것이다.
 **After:**
-> Korattur has recurring traffic congestion and water shortages.
+> 오목동은 교통 혼잡과 주차난이 반복된다.
 
-(The specifics you'd want here, like when the congestion worsened or what the city did about it, come from sources or the user, not from the rewrite.)
+(여기 필요한 구체성, 예컨대 혼잡이 언제 심해졌고 시가 무엇을 했는지는 출처나 사용자에게서 와야 한다. 재작성이 만들어내면 안 된다.)
 
-## LANGUAGE AND GRAMMAR PATTERNS
+## 언어·문법 패턴
 
-### 7. Overused "AI Vocabulary" Words
+### 7. 남용되는 「AI 어휘」
 
-**High-frequency AI words:** Actually, additionally, align with, crucial, delve, emphasizing, enduring, enhance, fostering, garner, highlight (verb), interplay, intricate/intricacies, key (adjective), landscape (abstract noun), pivotal, showcase, tapestry (abstract noun), testament, underscore (verb), valuable, vibrant
-**Problem:** These words appear far more frequently in post-2023 text. They often co-occur.
+**고빈도 AI 어휘:** 다양한, 핵심적인, 필수적인, 혁신적인, 획기적인, 전반적인, 심층적인, 원활한, 활용하다, 극대화하다, 향상시키다, 강화하다, 조명하다, 자리매김하다, 주목할 만한, 통찰(력), 여정, 시너지, 패러다임, 지형(비유), 급부상
+**문제:** 이 단어들은 2023년 이후 텍스트에서 빈도가 급증했고, 서로 몰려다니는 경향이 있다.
 **Before:**
-> Additionally, a distinctive feature of Somali cuisine is the incorporation of camel meat. An enduring testament to Italian colonial influence is the widespread adoption of pasta in the local culinary landscape, showcasing how these dishes have integrated into the traditional diet.
+> 또한 소말리아 요리의 핵심적인 특징은 다양한 낙타 고기 요리의 활용이다. 이탈리아 식민 지배의 영향을 보여주는 파스타는 현지 식문화 전반에 자리매김하며 전통 식단과 시너지를 만들어냈다.
 **After:**
-> Somali cuisine also includes camel meat, which is considered a delicacy. Pasta dishes, introduced during Italian colonization, remain common, especially in the south.
+> 소말리아 요리에는 낙타 고기도 쓰인다. 이탈리아 식민기에 들어온 파스타는 지금도, 특히 남부에서 흔히 먹는다.
 
-### 8. Avoidance of "is"/"are" (Copula Avoidance)
+### 8. 서술어 부풀리기 (「~이다」 회피)
 
-**Words to watch:** serves as/stands as/marks/represents [a], boasts/features/offers [a]
-**Problem:** LLMs substitute elaborate constructions for simple copulas.
+**감시 표현:** ~로 자리잡고 있다, ~역할을 수행하고 있다, ~로 기능하고 있다, ~를 보유하고 있다, ~를 갖추고 있다, ~로 평가받고 있다
+**문제:** LLM은 단순한 「~이다」 「~있다」 대신 거창한 서술어를 쓴다.
 **Before:**
-> Gallery 825 serves as LAAA's exhibition space for contemporary art. The gallery features four separate spaces and boasts over 3,000 square feet.
+> 갤러리825는 협회의 현대미술 전시 공간으로 자리잡고 있다. 이 갤러리는 네 개의 전시실을 보유하고 있으며 지역 미술 생태계의 거점 역할을 수행하고 있다.
 **After:**
-> Gallery 825 is LAAA's exhibition space for contemporary art. The gallery has four rooms totaling 3,000 square feet.
+> 갤러리825는 협회의 현대미술 전시 공간이다. 전시실은 네 개다.
 
-### 9. Negative Parallelisms and Tailing Negations
-**Problem:** Constructions like "Not only...but..." or "It's not just about..., it's..." are overused. So are clipped tailing-negation fragments such as "no guessing" or "no wasted motion" tacked onto the end of a sentence instead of written as a real clause.
+### 9. 부정 병렬 구문
+
+**문제:** 「단순한 X가 아니라 Y」 「X를 넘어 Y」 「그저 X가 아닌 Y」 구문의 남용. 평범한 주장을 반전 구조로 포장해 극적으로 보이게 한다.
 **Before:**
-> It's not just about the beat riding under the vocals; it's part of the aggression and atmosphere. It's not merely a song, it's a statement.
+> 이 곡의 비트는 단순한 배경음이 아니라 공격성과 분위기의 일부다. 이것은 그저 노래가 아니라 하나의 선언이다.
 **After:**
-> The heavy beat adds to the aggressive tone.
-**Before (tailing negation):**
-> The options come from the selected item, no guessing.
-**After:**
-> The options come from the selected item without forcing the user to guess.
+> 묵직한 비트가 곡의 공격적인 분위기를 만든다.
 
-### 10. Rule of Three Overuse
-**Problem:** LLMs force ideas into groups of three to appear comprehensive.
+### 10. 삼분법 남용
+
+**문제:** LLM은 포괄적으로 보이려고 개념을 억지로 세 개씩 묶는다.
 **Before:**
-> The event features keynote sessions, panel discussions, and networking opportunities. Attendees can expect innovation, inspiration, and industry insights.
+> 이번 행사는 기조연설, 패널 토론, 네트워킹 기회를 제공한다. 참가자들은 혁신과 영감, 그리고 업계의 통찰을 얻을 수 있다.
 **After:**
-> The event includes talks and panels. There's also time for informal networking between sessions.
+> 행사는 강연과 패널 토론으로 진행된다. 세션 사이에 참가자끼리 자유롭게 어울리는 시간도 있다.
 
-### 11. Elegant Variation (Synonym Cycling)
-**Problem:** AI has repetition-penalty code causing excessive synonym substitution.
+### 11. 동의어 순환
+
+**문제:** AI는 반복 억제 때문에 같은 대상을 과도하게 다른 말로 바꿔 부른다.
 **Before:**
-> The protagonist faces many challenges. The main character must overcome obstacles. The central figure eventually triumphs. The hero returns home.
+> 주인공은 많은 시련을 겪는다. 주요 인물은 장애물을 극복해야 한다. 중심 인물은 마침내 승리한다. 영웅은 고향으로 돌아온다.
 **After:**
-> The protagonist faces many challenges but eventually triumphs and returns home.
+> 주인공은 많은 시련을 겪지만 결국 이겨내고 고향으로 돌아온다.
 
-### 12. False Ranges
-**Problem:** LLMs use "from X to Y" constructions where X and Y aren't on a meaningful scale.
+### 12. 가짜 범위
+
+**문제:** 의미 있는 척도가 아닌데도 「X부터 Y까지」 「X에서 Y에 이르기까지」 구문을 쓴다.
 **Before:**
-> Our journey through the universe has taken us from the singularity of the Big Bang to the grand cosmic web, from the birth and death of stars to the enigmatic dance of dark matter.
+> 이 책은 빅뱅의 특이점부터 거대한 우주 그물망까지, 별의 탄생과 죽음에서 암흑물질의 신비로운 춤에 이르기까지 우주의 모든 것을 다룬다.
 **After:**
-> The book covers the Big Bang, star formation, and current theories about dark matter.
+> 이 책은 빅뱅, 별의 형성, 암흑물질에 관한 최근 이론을 다룬다.
 
-### 13. Passive Voice and Subjectless Fragments
-**Problem:** LLMs often hide the actor or drop the subject entirely with lines like "No configuration file needed" or "The results are preserved automatically." Rewrite these when active voice makes the sentence clearer and more direct.
+### 13. 피동 남용과 이중 피동
+
+**감시 표현:** ~되어지다, ~보여지다, ~쓰여지다, ~로 여겨진다, ~라고 생각되어진다, ~가 요구된다, ~할 것으로 기대된다
+**문제:** LLM은 행위 주체를 숨기는 피동문을 남발하고, 한국어 문법에 어긋나는 이중 피동(피동에 「~어지다」를 겹침)까지 만든다. 능동으로 쓰는 것이 더 명확할 때 고쳐 쓴다.
 **Before:**
-> No configuration file needed. The results are preserved automatically.
+> 이 정책은 효과적일 것으로 기대되어진다. 결과는 자동으로 보존되어지며, 별도의 설정이 요구되지 않는다.
 **After:**
-> You do not need a configuration file. The system preserves the results automatically.
+> 이 정책은 효과가 있을 것으로 보인다. 시스템이 결과를 자동으로 보존하므로 따로 설정할 필요가 없다.
 
-## STYLE PATTERNS
+## 문체 패턴
 
-### 14. Em Dashes (and En Dashes): Cut Them
+### 14. 줄표: 지운다
 
-**Rule:** The final rewrite contains no em dashes (—) or en dashes (–). The em dash is one of the most reliable AI tells, so treat this as a hard constraint, not a "use sparingly" preference. Replace each one, in rough order of preference: a period (start a new sentence), a comma (a tight aside), a colon (introducing an explanation), parentheses (a true aside), or restructure the sentence. Also catch spaced em dashes (` — `) and double hyphens (` -- `) used the same way.
+**규칙:** 최종 재작성본에는 줄표(—)와 반각 대시(–)가 없어야 한다. 줄표는 한국어 AI 출력에서도 가장 확실한 티 중 하나이므로 「가급적 자제」가 아니라 강제 조건으로 다룬다. 줄표 하나하나를 대체하되 대체 우선순위는 대략 이렇다: 마침표(문장을 새로 시작), 쉼표(짧은 삽입), 쌍점(설명 도입), 괄호(진짜 곁가지), 문장 재구성. 띄어 쓴 줄표(` — `)와 이중 하이픈(` -- `)도 같은 방식으로 잡는다. 산문 속 화살표(→)와 가운뎃점 나열도 문장으로 풀어 쓴다.
 **Before:**
-> The term is primarily promoted by Dutch institutions—not by the people themselves. You don't say "Netherlands, Europe" as an address—yet this mislabeling continues—even in official documents.
+> 이 용어는 주로 관련 기관들이 밀어붙인 것이다—정작 당사자들은 쓰지 않는다. 공식 문서에서도 이런 오기가 반복된다 — 지금까지도.
 **After:**
-> The term is primarily promoted by Dutch institutions, not by the people themselves. You don't say "Netherlands, Europe" as an address, yet this mislabeling continues in official documents.
+> 이 용어는 주로 관련 기관들이 밀어붙인 것으로, 정작 당사자들은 쓰지 않는다. 이런 오기는 공식 문서에서도 지금까지 반복된다.
+
+최종본을 내놓기 전에 `—`와 `–`를 검색한다. 하나라도 나오면 아직 끝난 것이 아니다. 예외는 하나다: 사용자가 제공한 글 샘플이 줄표를 쓰면 이 규칙보다 샘플이 우선한다(「문체 보정」 참고). 금지 대신 샘플의 빈도를 따른다.
+
+### 15. 굵은 글씨 남용
+
+**문제:** AI는 기계적으로 어구를 굵게 강조한다.
 **Before:**
-> The new policy — announced without warning — affects thousands of workers. The changes -- long overdue according to critics -- will take effect immediately.
+> 이 방법론은 **OKR(목표 및 핵심 결과)**, **KPI(핵심성과지표)**, 그리고 **비즈니스 모델 캔버스(BMC)** 같은 시각적 전략 도구를 결합한다.
 **After:**
-> The new policy, announced without warning, affects thousands of workers. The changes, long overdue according to critics, will take effect immediately.
+> 이 방법론은 OKR, KPI, 비즈니스 모델 캔버스 같은 도구를 결합한다.
 
-Before returning the final rewrite, scan it for `—` and `–`. Any hit means the draft isn't done. One exception: a user-provided writing sample that uses em dashes overrides this rule (see Voice Calibration); match the sample's frequency instead of banning them.
+### 16. 굵은 머리말 세로 목록
 
-### 15. Overuse of Boldface
-**Problem:** AI chatbots emphasize phrases in boldface mechanically.
+**문제:** AI는 굵은 머리말과 쌍점으로 시작하는 목록을 남발한다.
 **Before:**
-> It blends **OKRs (Objectives and Key Results)**, **KPIs (Key Performance Indicators)**, and visual strategy tools such as the **Business Model Canvas (BMC)** and **Balanced Scorecard (BSC)**.
+> - **사용자 경험:** 새로운 인터페이스로 사용자 경험이 크게 개선되었습니다.
+> - **성능:** 최적화된 알고리즘으로 성능이 향상되었습니다.
+> - **보안:** 종단간 암호화로 보안이 강화되었습니다.
 **After:**
-> It blends OKRs, KPIs, and visual strategy tools like the Business Model Canvas and Balanced Scorecard.
+> 이번 업데이트는 인터페이스를 새로 다듬고, 알고리즘 최적화로 로딩 속도를 줄였으며, 종단간 암호화를 추가했다.
 
-### 16. Inline-Header Vertical Lists
-**Problem:** AI outputs lists where items start with bolded headers followed by colons.
+### 17. 문체 혼용과 명사형 종결 남발
+
+**문제:** 한 글 안에서 합쇼체(~습니다), 해요체(~해요), 해라체(~다)가 근거 없이 뒤섞이거나, 산문에 개조식 명사형 종결(~함, ~임)이 끼어든다. 사람은 글의 격을 정하면 대체로 유지한다.
 **Before:**
-> - **User Experience:** The user experience has been significantly improved with a new interface.
-> - **Performance:** Performance has been enhanced through optimized algorithms.
-> - **Security:** Security has been strengthened with end-to-end encryption.
+> 이 기능은 데이터를 자동으로 백업합니다. 설정에서 주기를 바꿀 수 있어요. 백업 파일은 30일간 보관됨.
 **After:**
-> The update improves the interface, speeds up load times through optimized algorithms, and adds end-to-end encryption.
+> 이 기능은 데이터를 자동으로 백업합니다. 백업 주기는 설정에서 바꿀 수 있고, 파일은 30일간 보관됩니다.
 
-### 17. Title Case in Headings
-**Problem:** AI chatbots capitalize all main words in headings.
+### 18. 이모지 장식
+
+**문제:** AI는 제목이나 항목 앞을 이모지로 장식하곤 한다.
 **Before:**
-> ## Strategic Negotiations And Global Partnerships
+> 🚀 **출시 단계:** 3분기에 제품 출시
+> 💡 **핵심 인사이트:** 사용자는 단순함을 선호
+> ✅ **다음 단계:** 후속 회의 일정 잡기
 **After:**
-> ## Strategic negotiations and global partnerships
+> 제품은 3분기에 출시한다. 사용자 조사에서는 단순한 화면을 선호한다는 결과가 나왔다. 다음 단계는 후속 회의 일정을 잡는 것이다.
 
-### 18. Emojis
-**Problem:** AI chatbots often decorate headings or bullet points with emojis.
+### 19. 번역투 대명사와 「~들」 남용
+
+**문제:** 영어 직역식 대명사(그것은, 그녀는, 그들의)와 복수 접미사 「~들」의 남용. 한국어는 주어를 생략하고 복수를 따로 표시하지 않는 것이 자연스러운데, AI는 영어 문형을 그대로 옮긴다.
 **Before:**
-> 🚀 **Launch Phase:** The product launches in Q3
-> 💡 **Key Insight:** Users prefer simplicity
-> ✅ **Next Steps:** Schedule follow-up meeting
+> 사용자들이 그들의 파일들을 업로드하면, 그것들은 서버에 저장된다. 그녀는 그녀의 계정에서 그것을 확인할 수 있다.
 **After:**
-> The product launches in Q3. User research showed a preference for simplicity. Next step: schedule a follow-up meeting.
+> 사용자가 파일을 업로드하면 서버에 저장된다. 업로드한 파일은 자기 계정에서 확인할 수 있다.
 
-### 19. Curly Quotation Marks
-**Problem:** ChatGPT uses curly quotes (“...”) instead of straight quotes ("...").
+## 커뮤니케이션 패턴
+
+### 20. 대화 잔여물
+
+**감시 표현:** 도움이 되셨길 바랍니다, 물론입니다!, 다음은 ~입니다, 더 자세한 설명이 필요하시면, ~해 드릴까요?, 예시를 들어드릴까요?, 계속할까요?, 말씀해 주세요
+**문제:** 챗봇과의 대화용 문장이 콘텐츠에 그대로 붙여넣어진다.
 **Before:**
-> He said “the project is on track” but others disagreed.
+> 다음은 프랑스 혁명의 개요입니다. 도움이 되셨길 바랍니다! 더 자세한 설명이 필요하시면 말씀해 주세요.
 **After:**
-> He said "the project is on track" but others disagreed.
+> 프랑스 혁명은 1789년 재정 위기와 식량 부족으로 인한 소요에서 시작되었다.
 
-## COMMUNICATION PATTERNS
+### 21. 지식 한계 면책과 추측으로 빈칸 메우기
 
-### 20. Collaborative Communication Artifacts
-
-**Words to watch:** I hope this helps, Of course!, Certainly!, You're absolutely right!, Would you like..., Want me to...?, Want me to give examples?, Should I continue?, let me know, here is a...
-**Problem:** Text meant as chatbot correspondence gets pasted as content.
+**감시 표현:** ~년 기준으로, 구체적인 정보는 공개되어 있지 않으나, 확인 가능한 자료에 따르면, 알려진 바가 많지 않다, 외부에 잘 드러나지 않는, 개인사를 잘 공개하지 않는 것으로 보인다, ~였을 것으로 추정된다, ~로 여겨진다
+**문제:** 두 가지가 얽힌 티다. (a) 지식 컷오프 면책 문구가 본문에 남는다. (b) 출처를 못 찾으면 못 찾았다는 문단을 쓴 다음, 그럴듯한 추측으로 빈칸을 메운다. 비공개 인물에 대한 추측은 거의 항상 같은 상투구(「외부 활동을 자제하는」, 「개인사를 드러내지 않는」)에 도달하는데, 어느 것도 출처가 없다. 모르는 것은 모른다고 쓰거나 문장을 지운다. 추측을 사실처럼 입히지 않는다.
 **Before:**
-> Here is an overview of the French Revolution. I hope this helps! Let me know if you'd like me to expand on any section.
+> 회사의 설립 연도에 대한 구체적인 정보는 공개되어 있지 않으나, 1990년대에 설립된 것으로 추정된다. 그는 개인사를 잘 드러내지 않는 편으로 보이며, 평범한 가정에서 자라며 교육에 대한 관심을 키웠을 것으로 여겨진다.
 **After:**
-> The French Revolution began in 1789 when financial crisis and food shortages led to widespread unrest.
+> 회사의 설립 연도는 확인되는 자료가 없다. (또는 문장을 삭제한다. 연도는 출처가 있을 때만 쓴다.)
 
-### 21. Knowledge-Cutoff Disclaimers and Speculative Gap-Filling
+### 22. 아부하는 톤
 
-**Words to watch:** as of [date], Up to my last training update, While specific details are limited/scarce..., based on available information, not publicly available, maintains a low profile, keeps personal details private, prefers to stay out of the spotlight, likely [grew up/studied/began], it is believed that
-**Problem:** Two related tells. (a) Older models leave hard knowledge-cutoff disclaimers in the text. (b) When a model can't find a source, it writes a paragraph *about* not finding one and then invents plausible filler to cover the gap. For a private person the guess almost always lands on the same stock phrases ("maintains a low profile," "keeps personal details private"), none of it sourced. Say what isn't known, or cut the sentence; don't dress a guess up as fact.
-**Before (cutoff disclaimer):**
-> While specific details about the company's founding are not extensively documented in readily available sources, it appears to have been established sometime in the 1990s.
-**After:**
-> The company's founding date is not documented in the available sources. (Or cut the sentence. State a date only if a source provides one.)
-**Before (speculative gap-fill):**
-> Information about her early life is not publicly available, suggesting she maintains a low profile and keeps personal details private. She likely grew up in a middle-class household, which shaped her later interest in education reform.
-**After:**
-> Her early life is not documented in the available sources. (Or omit the section.)
-
-### 22. Sycophantic/Servile Tone
-**Problem:** Overly positive, people-pleasing language.
+**문제:** 지나치게 긍정적이고 비위를 맞추는 언어.
 **Before:**
-> Great question! You're absolutely right that this is a complex topic. That's an excellent point about the economic factors.
+> 좋은 질문입니다! 정확한 지적이시네요. 경제적 요인에 대한 말씀은 정말 탁월한 관점입니다.
 **After:**
-> The economic factors you mentioned are relevant here.
+> 말씀하신 경제적 요인은 이 논의와 관련이 있다.
 
-## FILLER AND HEDGING
+## 군더더기와 완곡
 
-### 23. Filler Phrases
+### 23. 군더더기 표현
 
 **Before → After:**
-- "In order to achieve this goal" → "To achieve this"
-- "Due to the fact that it was raining" → "Because it was raining"
-- "At this point in time" → "Now"
-- "In the event that you need help" → "If you need help"
-- "The system has the ability to process" → "The system can process"
-- "It is important to note that the data shows" → "The data shows"
+- 「이 목표를 달성하기 위해서는」 → 「이를 위해」
+- 「~에 있어서」 → 「~에서」 (또는 삭제)
+- 「~라고 할 수 있다」 → 「~이다」
+- 「~하는 것이 가능하다」 → 「~할 수 있다」
+- 「~로 인해」 → 「~때문에」
+- 「주목할 필요가 있다」 → (삭제하고 내용만 남긴다)
+- 「데이터가 보여주고 있다는 점은 중요하다」 → 「데이터가 보여준다」
 
-### 24. Excessive Hedging
-**Problem:** Over-qualifying statements.
+### 24. 과잉 완곡
+
+**문제:** 문장을 겹겹이 무르게 만든다.
 **Before:**
-> It could potentially possibly be argued that the policy might have some effect on outcomes.
+> 이 정책은 어쩌면 결과에 일정 부분 영향을 미칠 수도 있을 것으로 보입니다.
 **After:**
-> The policy may affect outcomes.
+> 이 정책은 결과에 영향을 줄 수 있다.
 
-### 25. Generic Positive Conclusions
-**Problem:** Vague upbeat endings.
+### 25. 상투적인 긍정 마무리
+
+**문제:** 막연하게 낙관적인 끝맺음.
 **Before:**
-> The future looks bright for the company. Exciting times lie ahead as they continue their journey toward excellence. This represents a major step in the right direction.
+> 회사의 미래는 밝다. 앞으로의 행보가 기대되며, 이는 올바른 방향으로 나아가는 중요한 발걸음이라 할 수 있다.
 **After:**
-> (Cut the paragraph. End on the last concrete fact instead of a send-off. If the source states real plans, use those.)
+> (문단을 삭제한다. 배웅 인사 대신 마지막 구체적 사실로 끝낸다. 원문에 실제 계획이 있으면 그것을 쓴다. 마무리에 실제 주장이 섞여 있으면 수사만 벗기고 주장은 남긴다.)
 
-### 26. Hyphenated Word Pair Overuse
+### 26. 번역투 구문
 
-**Words to watch:** third-party, cross-functional, client-facing, data-driven, decision-making, well-known, high-quality, real-time, long-term, end-to-end
-**Problem:** AI hyphenates these uniformly, including in predicate position (`the report is high-quality`). Humans hyphenate inconsistently — typically only when the compound is attributive (`a high-quality report`) and often dropping the hyphen otherwise (`the report is high quality`). Keep attributive-position hyphens; drop them when the compound follows the noun.
+**감시 표현:** ~에 의해, ~을 가지고 있다, 가장 ~한 것 중 하나, ~에 다름 아니다, ~로부터, ~에 대하여, 「~의」 연쇄
+**문제:** 영어 문형을 직역한 구문이다. 사람도 쓰지만, AI 글에서는 균일하게 몰려 나온다.
 **Before:**
-> The cross-functional team delivered a high-quality, data-driven report. The team is cross-functional, the report is high-quality, and the methodology is data-driven.
+> 이 보고서는 연구팀에 의해 작성되었으며, 국내에서 가장 영향력 있는 연구 중 하나로 평가받고 있다. 그 결과는 정책의 변화의 방향의 근거가 되었다.
 **After:**
-> The cross-functional team delivered a high-quality, data-driven report. The team is cross functional, the report is high quality, and the methodology is data driven.
+> 연구팀이 쓴 이 보고서는 국내에서 영향력 있는 연구로 꼽힌다. 그 결과는 정책 방향을 바꾸는 근거가 되었다.
 
-### 27. Persuasive Authority Tropes
+### 27. 권위 수사
 
-**Phrases to watch:** The real question is, at its core, in reality, what really matters, fundamentally, the deeper issue, the heart of the matter
-**Problem:** LLMs use these phrases to pretend they are cutting through noise to some deeper truth, when the sentence that follows usually just restates an ordinary point with extra ceremony.
+**감시 표현:** 진짜 문제는, 본질적으로, 결국 핵심은, 정말 중요한 것은, 더 깊은 문제는, 문제의 본질은
+**문제:** LLM은 소음을 뚫고 깊은 진실에 도달하는 척하는 표현을 쓰지만, 뒤따르는 문장은 대개 평범한 주장을 격식만 더해 되풀이한다.
 **Before:**
-> The real question is whether teams can adapt. At its core, what really matters is organizational readiness.
+> 진짜 문제는 조직이 적응할 수 있느냐다. 본질적으로 핵심은 조직의 준비 상태에 있다.
 **After:**
-> The question is whether teams can adapt. That mostly depends on whether the organization is ready to change its habits.
+> 문제는 조직이 적응할 수 있느냐다. 그것은 대체로 조직이 습관을 바꿀 준비가 되어 있느냐에 달렸다.
 
-### 28. Signposting and Announcements
+### 28. 예고 문장
 
-**Phrases to watch:** Let's dive in, let's explore, let's break this down, here's what you need to know, now let's look at, without further ado
-**Problem:** LLMs announce what they are about to do instead of doing it. This meta-commentary slows the writing down and gives it a tutorial-script feel.
+**감시 표현:** 지금부터 ~에 대해 알아보겠습니다, ~를 살펴보겠습니다, 하나씩 짚어보겠습니다, 알아야 할 것들, 본격적으로 들어가기 전에
+**문제:** LLM은 할 일을 하는 대신 무엇을 할지 예고한다. 이런 메타 서술은 글의 속도를 늦추고 강의 대본 같은 느낌을 준다.
 **Before:**
-> Let's dive into how caching works in Next.js. Here's what you need to know.
+> 지금부터 Next.js의 캐싱이 어떻게 작동하는지 알아보겠습니다. 알아야 할 내용을 하나씩 짚어드릴게요.
 **After:**
-> Next.js caches data at multiple layers, including request memoization, the data cache, and the router cache.
+> Next.js는 요청 메모이제이션, 데이터 캐시, 라우터 캐시 등 여러 층에서 데이터를 캐싱한다.
 
-### 29. Fragmented Headers
+### 29. 머리말 뒤 한 줄 되풀이
 
-**Signs to watch:** A heading followed by a one-line paragraph that simply restates the heading before the real content begins.
-**Problem:** LLMs often add a generic sentence after a heading as a rhetorical warm-up. It usually adds nothing and makes the prose feel padded.
+**감시 신호:** 제목 바로 아래에 제목을 되풀이하는 한 줄짜리 문단이 오고, 그다음에야 실제 내용이 시작된다.
+**문제:** LLM은 제목 뒤에 수사적 워밍업 문장을 끼워 넣는다. 대개 아무것도 더하지 않고 글만 부풀린다.
 **Before:**
-> ## Performance
+> ## 성능
 >
-> Speed matters.
+> 속도는 중요하다.
 >
-> When users hit a slow page, they leave.
+> 페이지가 느리면 사용자는 떠난다.
 **After:**
-> ## Performance
+> ## 성능
 >
-> When users hit a slow page, they leave.
+> 페이지가 느리면 사용자는 떠난다.
 
-### 30. Diff-Anchored Writing
-**Problem:** Documentation or comments written as if narrating a change rather than describing the thing as it is. Unless the document is inherently version-scoped (changelogs, release notes, migration guides), it should read coherently without knowing what changed in the last commit.
+### 30. 변경 이력에 묶인 서술
+
+**문제:** 대상을 있는 그대로 설명하지 않고 변경 사항을 중계하듯 쓴 문서나 주석. 본질적으로 버전에 묶인 문서(체인지로그, 릴리스 노트, 마이그레이션 가이드)가 아니라면, 지난 커밋에서 무엇이 바뀌었는지 몰라도 읽히는 글이어야 한다.
 **Before:**
-> This function was added to replace the previous approach of iterating through all items, which caused O(n²) performance.
+> 이 함수는 모든 항목을 순회하던 기존 방식이 O(n²) 성능 문제를 일으켜 이를 대체하기 위해 추가되었다.
 **After:**
-> This function uses a hash map for O(1) lookups, avoiding the O(n²) cost of naive iteration.
+> 이 함수는 해시 맵으로 O(1) 조회를 수행해 단순 순회의 O(n²) 비용을 피한다.
 
-### 31. Manufactured Punchlines and Staccato Drama
-**Problem:** LLMs often make every sentence land like a quotable closer, then stack short declarative fragments to manufacture drama. A single short sentence for emphasis is fine; a run of them starts to sound engineered.
+### 31. 인위적인 단문 연타
+
+**문제:** LLM은 모든 문장을 명언처럼 떨어뜨리려 하고, 짧은 단정문을 연달아 쌓아 극적 효과를 만든다. 강조용 단문 하나는 좋다. 여러 개가 연달아 나오면 연출한 티가 난다.
 **Before:**
-> Then AlphaEvolve arrived. It had no preference for symmetry. No aesthetic prior. No nostalgia for human taste. The old rules were gone.
+> 그때 알파이볼브가 등장했다. 대칭에 대한 선호는 없었다. 미적 편향도 없었다. 인간의 취향에 대한 향수도 없었다. 낡은 규칙은 사라졌다.
 **After:**
-> AlphaEvolve changed the search because it did not favor symmetry or human-looking designs. That made some of the older assumptions less useful.
+> 알파이볼브는 대칭이나 인간이 보기 좋은 설계를 선호하지 않았고, 그 때문에 탐색의 방향이 달라졌다. 기존 가정 일부는 그만큼 쓸모가 줄었다.
 
-### 32. Aphorism Formulas
+### 32. 경구 공식
 
-**Words to watch:** X is the Y of Z, X becomes a trap, X is not a tool but a mirror, the language of, the currency of, the architecture of
-**Problem:** LLMs turn ordinary claims into reusable aphorisms that sound profound without adding precision. Replace the formula with the concrete claim it is gesturing at.
+**감시 표현:** X는 Y의 언어다, X는 Z의 통화다, X는 덫이 된다, X는 도구가 아니라 거울이다, ~의 문법, ~의 건축학
+**문제:** LLM은 평범한 주장을 재사용 가능한 경구로 바꿔 심오해 보이게 하지만 정밀함은 더하지 않는다. 공식을 걷어내고 그것이 가리키던 구체적 주장을 쓴다.
 **Before:**
-> Symmetry is the language of trust. Efficiency becomes a trap when teams forget the human layer.
+> 대칭은 신뢰의 언어다. 효율은 인간이라는 층위를 잊는 순간 덫이 된다.
 **After:**
-> Symmetric layouts often feel more predictable to users. Teams can over-optimize workflows and miss how people actually use them.
+> 대칭적인 화면은 사용자에게 더 예측 가능하게 느껴지는 경우가 많다. 업무 흐름만 최적화하다 보면 사람들이 실제로 일하는 방식을 놓칠 수 있다.
 
-### 33. Conversational Rhetorical Openers
+### 33. 가짜 솔직 오프닝
 
-**Phrases to watch:** Honestly?, Look, Here's the thing, The thing is, Let's be honest, Real talk, when used as standalone hooks or fake-candid pauses before an ordinary point.
-**Problem:** LLMs open with a fake-candid hook to manufacture intimacy before delivering a routine claim. The tell is the theatrical pause-and-reveal: a one-word question or aside, then the "real" answer. A person being honest usually just says the thing.
+**감시 표현:** 솔직히 말해서, 솔직히?, 까놓고 말하면, 사실 말이죠, 이렇게 말씀드리고 싶어요 (평범한 주장 앞에 단독 훅이나 가짜 솔직 멈춤으로 쓰일 때).
+**문제:** LLM은 일상적인 주장을 전달하기 전에 가짜 솔직 훅으로 친밀감을 연출한다. 티는 연극적인 멈춤과 반전이다: 한마디 질문이나 곁말, 그리고 「진짜」 답. 정말 솔직한 사람은 대개 그냥 그 말을 한다.
 **Before:**
-> Is it worth the price? Honestly? It depends on how often you'll use it.
+> 이 가격이 합리적이냐고요? 솔직히 말해서, 그건 얼마나 자주 쓰느냐에 달렸습니다.
 **After:**
-> Whether it's worth the price depends on how often you'll use it.
+> 가격이 합리적인지는 얼마나 자주 쓰느냐에 달렸다.
 
-## DETECTION GUIDANCE
+## 판정 지침
 
-### What NOT to flag (false positives)
+### 티로 오인하지 말 것 (오탐 방지)
 
-A clean human writer can hit several of the patterns above without any AI involvement. Before rewriting, sanity-check that you are not gutting legitimate prose. The following are *not* reliable indicators on their own:
+깔끔하게 쓰는 사람도 AI 없이 위 패턴 몇 개를 밟을 수 있다. 재작성 전에, 멀쩡한 글을 도려내는 것은 아닌지 점검한다. 다음은 그 자체로는 신뢰할 만한 지표가 아니다:
 
-- **Perfect grammar and consistent style.** Many writers are professionals or have been edited. Polish does not equal AI.
-- **Mixed casual and formal registers.** This often signals a person in a technical field, a young writer, or someone with neurodivergent prose habits — not a chatbot.
-- **"Bland" or "robotic" prose.** AI prose has *specific* tells. Generic dryness without those tells is just dry writing.
-- **Formal or academic vocabulary.** AI overuses *specific* fancy words (see §7), not all fancy words. Don't flatten "ostensibly" or "constituent" just because they sound brainy.
-- **Letter-style opening or closing on a comment.** Salutations and sign-offs predate ChatGPT by centuries.
-- **Common transition words in isolation.** *Additionally*, *moreover*, *consequently* are AI-coded only when piled up. One *however* is not a tell.
-- **Curly quotes alone.** macOS, Word, Google Docs, and most CMSes auto-curl by default. Curly quotes only count when stacked with other tells.
-- **Em dashes alone.** Many editors and journalists use them often. Em dashes are evidence only when paired with formulaic sales-y rhythm.
-- **One short emphatic sentence.** Humans use clipped sentences to land a point. Flag staccato drama only when several short fragments appear in a row and inflate the tone.
-- **"Honestly" or "look" mid-sentence.** These are ordinary in casual writing. The tell is the standalone theatrical opener, not the word itself.
-- **Unsourced claims.** Most of the web is unsourced. Lack of citations doesn't prove anything.
-- **Correct, complex formatting.** Visual editors and templates produce clean output without any AI.
-- **Secondhand text.** Do not rewrite watched phrases inside quotations, titles, proper names, or examples where the phrase is being discussed rather than used.
+- **완벽한 맞춤법과 일관된 문체.** 전문가의 글이거나 편집을 거친 글이다. 다듬어진 것과 AI는 다르다.
+- **일관된 합쇼체.** 「~습니다」로 통일된 격식체는 정상적인 문어체다. 격식 자체를 티로 보지 않는다.
+- **피동문.** 한국어 학술·보도 문체에서 피동은 흔하다. 티는 이중 피동(§13)과 몰려다니는 남용이지, 피동 자체가 아니다.
+- **만연체.** 길게 이어 쓰는 문장은 한국어 산문의 오랜 습관이다. 해석을 덧붙이는 연결어미 부가절(§3)과 구별한다.
+- **한자어 많은 문어체.** 공문서·논문·보도자료의 장르 관습이지 AI가 아니다.
+- **보도 문맥의 「~로 알려졌다」.** 취재원을 밝히지 않는 기사 관행이다. §5의 티는 이런 표현이 근거 없는 주장들과 몰려다닐 때다.
+- **격식과 구어의 혼합.** 기술 분야 종사자, 젊은 필자, 혹은 고유한 산문 습관을 가진 사람의 신호일 때가 많다.
+- **「무미건조한」 산문.** AI 산문에는 특정한 티가 있다. 그 티 없이 그냥 건조한 글은 건조한 글일 뿐이다.
+- **접속 부사 한두 개.** 「또한」 「그러나」 「한편」은 쌓일 때만 AI스럽다. 「그러나」 하나는 티가 아니다.
+- **「다양한」 한 번.** §7의 어휘도 단독으로는 무의미하다. 몰려 나올 때만 센다.
+- **줄표 한두 개.** 편집자와 기자 중에도 줄표를 즐겨 쓰는 사람이 있다. 줄표는 상투적인 리듬과 겹칠 때만 증거다.
+- **짧은 강조문 하나.** 사람도 못을 박으려고 단문을 쓴다. 단문 연타(§31)는 여러 개가 연달아 톤을 부풀릴 때만 잡는다.
+- **출처 없는 주장.** 웹 대부분이 출처가 없다. 인용 부재는 아무것도 증명하지 않는다.
+- **정확하고 복잡한 서식.** 위지위그 편집기와 템플릿은 AI 없이도 깔끔한 결과물을 만든다.
+- **인용문·제목·고유명사 속 표현.** 감시 표현이 논의 대상으로 등장하는 곳은 고치지 않는다.
 
-When in doubt, look for **clusters** of tells, not isolated ones. A single em dash means nothing; em dashes plus rule-of-three plus *vibrant tapestry* plus a "Conclusion" section is a confession.
+의심스러우면 고립된 티가 아니라 **군집**을 찾는다. 줄표 하나는 아무 의미 없다. 줄표에 삼분법에 「다양한 문화유산이 어우러진」에 「결론」 섹션까지 겹치면 그것은 자백이다.
 
-### Signs of human writing (preserve these)
+### 사람 글의 증거 (보존할 것)
 
-When you see these, lean toward leaving the prose alone — they are evidence of a real person writing, and over-editing will destroy what makes the piece sound human:
+다음이 보이면 손대지 않는 쪽으로 기운다. 진짜 사람이 쓴 증거이고, 과잉 교정은 글을 사람답게 만드는 바로 그것을 파괴한다:
 
-- **Specific, unusual, hard-to-fabricate detail.** A real address. A weird quote. The phrase "the lawyer who used to work upstairs from my dentist." LLMs round off specifics; humans hoard them.
-- **Mixed feelings and unresolved tension.** "I think this is mostly good, but it bothers me, and I can't fully explain why." LLMs default to clean takes.
-- **Dated, era-bound references.** Slang, memes, or in-jokes that map to a specific year and subculture. Models lag by a year or more.
-- **First-person editorial choices the writer can defend.** If the writer can explain *why* they made a particular cut or used a particular word, that's a strong human signal.
-- **Variety in sentence length.** Real writing alternates short and long. AI writing tends toward an even, mid-length cadence.
-- **Genuine asides, parentheticals, or self-corrections.** "(I keep wanting to say 'almost' here, but it really was certain.)" Models rarely interrupt themselves like this.
-- **Edits made before November 30, 2022.** ChatGPT's public launch. Anything older than that is, with very rare exceptions, not AI-written.
+- **구체적이고 특이하며 지어내기 힘든 디테일.** 실제 주소. 이상한 인용. 「치과 위층에서 일하던 그 변호사」 같은 표현. LLM은 구체성을 뭉개고, 사람은 그것을 쌓아 둔다.
+- **양가감정과 해소되지 않은 긴장.** 「대체로 좋다고 생각하는데, 어딘가 걸리고, 왜인지 설명을 못 하겠다.」 LLM은 깔끔한 결론을 기본값으로 삼는다.
+- **시대와 커뮤니티에 밀착된 표현.** 특정 연도와 하위문화로 좌표가 찍히는 유행어, 밈, 내부 농담. 모델은 1년 이상 뒤처진다.
+- **글쓴이가 변호할 수 있는 1인칭 선택.** 왜 그 단어를 골랐고 왜 그 문장을 잘랐는지 설명할 수 있다면 강한 사람 신호다.
+- **들쭉날쭉한 문장 길이.** 진짜 글은 장단을 오간다. AI 글은 고른 중간 길이로 수렴한다.
+- **진짜 여담, 괄호, 자기 수정.** 「(여기서 자꾸 「거의」라고 쓰고 싶은데, 정말로 확실했다.)」 모델은 이렇게 스스로 말을 끊는 일이 드물다.
+- **2022년 11월 30일 이전의 글.** ChatGPT 공개일이다. 그보다 오래된 글은 극히 드문 예외를 빼면 AI가 쓴 것이 아니다.
 
 ---
 
-## Invocation Modes
+## 호출 모드
 
-**Pasted text (default).** The user gives text in the conversation. Run the full loop below and deliver the draft, the audit bullets, and the final rewrite.
+**붙여넣은 텍스트 (기본).** 사용자가 대화에 텍스트를 준다. 아래 루프를 전부 돌리고 초안, 감사 항목, 최종 재작성본을 전달한다.
 
-**File mode.** The user points at a file. Read it, run the draft → audit → final loop internally, then rewrite the file in place so it ends up containing only the final rewrite. Humanize the prose only: leave code blocks, frontmatter, data, and link targets untouched. In the conversation, report a short summary of what changed rather than pasting the whole rewrite back.
+**파일 모드.** 사용자가 파일을 가리킨다. 파일을 읽고 초안 → 감사 → 최종 루프를 내부에서 돌린 뒤, 파일이 최종본만 담도록 제자리에서 고쳐 쓴다. 산문만 다듬는다: 코드 블록, frontmatter, 데이터, 링크 대상은 건드리지 않는다. 대화에는 전체 재작성본을 붙이는 대신 무엇이 바뀌었는지 짧게 보고한다.
 
-**Embedded mode.** Another task or agent is using this skill as one step of a larger job (a PR description, a commit message, a doc). Run the loop internally and output only the final text. No draft, no audit bullets, no summary. The caller wants prose, not ceremony.
+**임베디드 모드.** 다른 작업이나 에이전트가 더 큰 일(PR 설명, 커밋 메시지, 문서)의 한 단계로 이 스킬을 쓴다. 루프를 내부에서 돌리고 최종 텍스트만 출력한다. 초안도, 감사 항목도, 요약도 없다. 호출자는 산문을 원하지 의식을 원하지 않는다.
 
-## Process and Output
+## 프로세스와 출력
 
-1. Read the input carefully and identify every instance of the patterns above.
-2. Write a **draft rewrite**. Check that it reads naturally aloud, varies sentence length, prefers specific details and simple constructions (is/are/has), and keeps the appropriate register.
-3. Ask two questions: **"What makes the below so obviously AI generated?"** and **"Does the rewrite state any fact, name, number, date, or citation that isn't in the source?"** Answer briefly. A fabrication is a defect even when it sounds more human than the vague original.
-4. Revise into a **final rewrite** that addresses them and contains no em or en dashes (see §14).
+1. 원문을 주의 깊게 읽고 위 패턴에 해당하는 모든 사례를 찾는다. 패턴 군집이 발견되지 않으면 재작성하지 않는다. 원문을 그대로 최종본으로 삼고, 사람 글로 판정한 근거를 짧게 보고한다. 티 없는 글을 취향으로 고치는 것은 티 제거가 아니라 훼손이다.
+2. **초안 재작성본**을 쓴다. 소리 내어 읽었을 때 자연스러운지, 문장 길이가 다양한지, 구체적 디테일과 단순한 서술어(~이다/~있다)를 선호하는지, 문체의 격이 유지되는지 점검한다.
+3. 두 가지를 자문한다: **「아래 글이 누가 봐도 AI 티가 나는 이유는 무엇인가?」** 그리고 **「재작성본에 원문에 없는 사실, 이름, 숫자, 날짜, 출처가 들어갔는가?」** 짧게 답한다. 날조는 모호한 원문보다 사람답게 들리더라도 결함이다.
+4. 그 답을 반영한 **최종 재작성본**으로 고친다. 줄표와 반각 대시가 없어야 한다(§14 참고).
 
-In pasted-text mode, deliver the draft, the brief "still-AI" bullets, the final rewrite, and (optionally) a short summary of changes. In file and embedded modes, run the same loop but deliver only what the mode calls for (see Invocation Modes).
+붙여넣기 모드에서는 초안, 「아직 AI 티가 나는 점」 목록, 최종 재작성본, (선택적으로) 짧은 변경 요약을 전달한다. 파일·임베디드 모드에서는 같은 루프를 돌리되 모드가 요구하는 것만 전달한다(「호출 모드」 참고).
 
-## Reference
+## 참고
 
-This skill is based on [Wikipedia:Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing), maintained by WikiProject AI Cleanup. The patterns documented there come from observations of thousands of instances of AI-generated text on Wikipedia.
+이 스킬은 [blader/humanizer](https://github.com/blader/humanizer)를 한국어 텍스트 전용으로 재설계한 것이다. 원본은 WikiProject AI Cleanup이 관리하는 [Wikipedia:Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing)에 바탕을 두며, 그 패턴들은 위키백과에서 관찰된 수천 건의 AI 생성 텍스트에서 나왔다. 한국어 고유 패턴(이중 피동, 번역투, 문체 혼용 등)은 한국어 LLM 출력에서 반복 관찰되는 티를 정리한 것이다.
 
-Key insight from Wikipedia: "LLMs use statistical algorithms to guess what should come next. The result tends toward the most statistically likely result that applies to the widest variety of cases."
+위키백과의 핵심 통찰: "LLM은 통계 알고리즘으로 다음에 올 말을 추측한다. 그 결과는 가장 넓은 범위의 경우에 들어맞는, 통계적으로 가장 그럴듯한 쪽으로 수렴한다."

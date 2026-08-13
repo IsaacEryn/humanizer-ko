@@ -58,4 +58,4 @@ if readme_numbers != set(range(1, 34)):
 if len(SKILL.splitlines()) > 500:
     raise SystemExit("SKILL.md exceeds the 500-line portability budget")
 
-print(f"Humanizer package v{skill_version} is valid")
+print(f"Humanizer-KO package v{skill_version} is valid")

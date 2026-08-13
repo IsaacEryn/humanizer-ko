@@ -1,18 +1,18 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-marketplace-manifest.json",
-  "name": "humanizer",
+  "name": "humanizer-ko",
   "owner": {
-    "name": "blader",
-    "url": "https://github.com/blader"
+    "name": "IsaacEryn",
+    "url": "https://github.com/IsaacEryn"
   },
-  "description": "The humanizer skill, installable as a Claude Code plugin.",
+  "description": "Claude Code 플러그인으로 설치할 수 있는 humanizer-ko 스킬.",
   "plugins": [
     {
-      "name": "humanizer",
+      "name": "humanizer-ko",
       "source": "./",
-      "description": "Remove signs of AI-generated writing from text, making it sound more natural and human. Based on Wikipedia's \"Signs of AI writing\" guide.",
+      "description": "한국어 텍스트에서 AI 생성 글의 티를 찾아 제거해 자연스러운 사람의 문장으로 다듬는다. Remove signs of AI-generated writing from Korean text. blader/humanizer의 한국어 재설계판.",
       "license": "MIT",
-      "keywords": ["writing", "editing", "ai-detection", "humanize", "prose", "style"]
+      "keywords": ["writing", "editing", "ai-detection", "humanize", "prose", "style", "korean", "한국어"]
     }
   ]
 }
