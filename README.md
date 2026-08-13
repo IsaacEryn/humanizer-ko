@@ -1,5 +1,7 @@
 # Humanizer-KO
 
+[![skills.sh installs](https://skills.sh/b/IsaacEryn/humanizer-ko)](https://skills.sh/IsaacEryn/humanizer-ko)
+
 한국어 텍스트에서 AI 생성 글의 티를 찾아 제거하는 에이전트 스킬입니다. [blader/humanizer](https://github.com/blader/humanizer)를 포크해 패턴 전체를 한국어에 맞게 재설계했습니다. 순수 Markdown이라 스킬 형식의 지침을 지원하는 어떤 에이전트 하네스에서도 동작합니다.
 
 **English:** A portable agent skill that removes signs of AI-generated writing from **Korean** text. Forked from [blader/humanizer](https://github.com/blader/humanizer) and redesigned for Korean: English-only tells (em dashes as the sole focus, Title Case, hyphenated compounds) are replaced with Korean-specific ones such as double passives (이중 피동), translationese (번역투), speech-level mixing (문체 혼용), and pronoun/plural overuse. The skill instructions themselves are written in Korean; the runtime artifact is `SKILL.md`.
