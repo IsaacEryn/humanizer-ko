@@ -2,9 +2,21 @@
 
 [![skills.sh installs](https://skills.sh/b/IsaacEryn/humanizer-ko)](https://skills.sh/IsaacEryn/humanizer-ko)
 
-한국어 텍스트에서 AI 생성 글의 티를 찾아 제거하는 에이전트 스킬입니다. [blader/humanizer](https://github.com/blader/humanizer)를 포크해 패턴 전체를 한국어에 맞게 재설계했습니다. 순수 Markdown이라 스킬 형식의 지침을 지원하는 어떤 에이전트 하네스에서도 동작합니다.
+한국어 텍스트에서 AI 생성 글의 티를 찾아 제거하는 에이전트 스킬입니다. [blader/humanizer](https://github.com/blader/humanizer)를 바탕으로 33개 패턴 전체를 한국어에 맞게 다시 설계했습니다. 순수 Markdown이라 Claude Code를 비롯해 스킬 형식의 지침을 읽는 어떤 에이전트에서도 동작합니다.
 
-**English:** A portable agent skill that removes signs of AI-generated writing from **Korean** text. Forked from [blader/humanizer](https://github.com/blader/humanizer) and redesigned for Korean: English-only tells (em dashes as the sole focus, Title Case, hyphenated compounds) are replaced with Korean-specific ones such as double passives (이중 피동), translationese (번역투), speech-level mixing (문체 혼용), and pronoun/plural overuse. The skill instructions themselves are written in Korean; the runtime artifact is `SKILL.md`.
+**English:** A portable agent skill that removes signs of AI-generated writing from **Korean** text. Derived from [blader/humanizer](https://github.com/blader/humanizer) and redesigned for Korean: English-only tells (em dashes as the sole focus, Title Case, hyphenated compounds) are replaced with Korean-specific ones such as double passives (이중 피동), translationese (번역투), speech-level mixing (문체 혼용), and pronoun/plural overuse. The skill instructions themselves are written in Korean; the runtime artifact is `SKILL.md`.
+
+## 이럴 때 씁니다
+
+- ChatGPT나 Claude로 초안을 뽑았는데 사람이 쓴 글로 읽히지 않을 때
+- 보고서나 블로그 글에서 「다양한」 「핵심적인」 「~라고 할 수 있다」가 반복될 때
+- 영어 문서를 번역했더니 「~에 의해」 「그것은」 같은 번역투가 남았을 때
+- 이중 피동(「진행되어졌다」)이나 문체 혼용(합쇼체와 해요체가 섞임)을 한 번에 잡고 싶을 때
+- 논문이나 공문처럼 격식을 지켜야 하는 글에서, 문체는 두고 AI 티만 걷어내고 싶을 때
+
+반대로 고칠 것이 없으면 고치지 않습니다. 격식체, 피동문, 만연체, 한자어 문어체는 한국어 글쓰기의 정상적인 관습이라 티로 보지 않습니다. 이 판정 기준은 아래 「동작 원리」에 정리해 두었습니다.
+
+교정 대상이 영어라면 원본 [humanizer](https://github.com/blader/humanizer)를 쓰세요. 두 스킬을 함께 설치해 두면 글의 언어에 따라 에이전트가 알아서 고릅니다.
 
 ## 왜 한국어판인가
 
