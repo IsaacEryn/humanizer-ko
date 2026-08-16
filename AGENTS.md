@@ -20,7 +20,7 @@
 
 `SKILL.md`와 `README.md`는 동기화를 유지해야 한다. 동작이나 내용을 바꿀 때:
 
-- **패턴:** 스킬은 현재 **33개 번호 패턴**을 정의한다. 추가·삭제·번호 변경 시 README 패턴 표와 「33개 탐지 패턴」 제목, 본문의 모든 상호 참조(§N)를 같은 변경에서 함께 고친다. 의도적인 재번호가 아니면 번호를 유지한다.
+- **패턴:** 스킬은 현재 **35개 번호 패턴**을 정의한다. 추가·삭제·번호 변경 시 README 패턴 표와 「35개 탐지 패턴」 제목, 본문의 모든 상호 참조(§N)를 같은 변경에서 함께 고친다. 의도적인 재번호가 아니면 번호를 유지한다. 검증 스크립트가 패턴 번호를 순서까지 비교하므로 새 패턴은 마지막 번호 뒤에 붙인다.
 - **버전:** `SKILL.md` frontmatter의 `metadata.version`, `README.md`의 「버전 이력」, `.claude-plugin/plugin.json`의 `version` 세 곳을 함께 올린다. 스킬 버전은 `metadata` 아래에 둔다. 최상위 `version` 키는 Agent Skills 호스트 간 이식성이 없다. (`marketplace.json`은 의도적으로 버전을 생략해 `plugin.json`이 패키지의 단일 출처가 되게 한다.)
 - **호환성:** 설치·사용 문구를 하네스 중립으로 유지한다. Markdown 스킬 지침을 읽을 수 있는 어떤 하네스에서도 동작해야 하며, Claude Code·OpenCode·Codex 등은 예시이지 한계가 아니다.
 - **검증:** 게시 전에 `python3 scripts/validate-package.py`, `npx skills add . --list`, `claude plugin validate .`를 실행한다.

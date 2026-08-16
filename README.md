@@ -1,6 +1,6 @@
 # Humanizer-KO
 
-한국어 텍스트에서 AI 생성 글의 티를 찾아 제거하는 에이전트 스킬입니다. [blader/humanizer](https://github.com/blader/humanizer)를 바탕으로 33개 패턴 전체를 한국어에 맞게 다시 설계했습니다. 순수 Markdown이라 Claude Code를 비롯해 스킬 형식의 지침을 읽는 어떤 에이전트에서도 동작합니다.
+한국어 텍스트에서 AI 생성 글의 티를 찾아 제거하는 에이전트 스킬입니다. [blader/humanizer](https://github.com/blader/humanizer)를 바탕으로 35개 패턴 전체를 한국어에 맞게 다시 설계했습니다. 순수 Markdown이라 Claude Code를 비롯해 스킬 형식의 지침을 읽는 어떤 에이전트에서도 동작합니다.
 
 **English:** A portable agent skill that removes signs of AI-generated writing from **Korean** text. Derived from [blader/humanizer](https://github.com/blader/humanizer) and redesigned for Korean: English-only tells (em dashes as the sole focus, Title Case, hyphenated compounds) are replaced with Korean-specific ones such as double passives (이중 피동), translationese (번역투), speech-level mixing (문체 혼용), and pronoun/plural overuse. The skill instructions themselves are written in Korean; the runtime artifact is `SKILL.md`.
 
@@ -26,7 +26,7 @@
 - 「~들」 복수 남용, 「~라고 할 수 있다」류 군더더기
 - 「단순한 X가 아니라 Y」 「앞으로의 행보가 기대됩니다」 같은 상투구
 
-이 스킬은 원본의 뼈대(패턴 목록, 오탐 방지, 초안→감사→최종 루프, 사실 날조 금지)를 유지하면서 33개 패턴 전부를 한국어 예시로 다시 썼습니다.
+이 스킬은 원본의 뼈대(패턴 목록, 오탐 방지, 초안→감사→최종 루프, 사실 날조 금지)를 유지하면서 패턴 전부를 한국어 예시로 다시 썼고, 한국어에서 실제로 흔한 티를 더해 35개로 늘렸습니다.
 
 ## 설치
 
@@ -106,7 +106,7 @@ docs/launch-post.md의 산문을 humanizer-ko로 다듬어줘
 
 스킬이 샘플의 문장 리듬, 어휘, 종결어미 습관, 버릇을 분석해 일반적인 「깨끗한」 출력 대신 그 습관을 따라 씁니다.
 
-## 33개 탐지 패턴
+## 35개 탐지 패턴
 
 ### 내용 패턴
 
@@ -165,6 +165,8 @@ docs/launch-post.md의 산문을 humanizer-ko로 다듬어줘
 | 31 | **단문 연타** | 「없었다. 없었다. 사라졌다.」 | 자연스러운 호흡으로 |
 | 32 | **경구 공식** | 「대칭은 신뢰의 언어다」 | 구체적 주장으로 교체 |
 | 33 | **가짜 솔직 오프닝** | 「솔직히 말해서, 그건 ~에 달렸습니다」 | 그냥 그 말을 함 |
+| 34 | **문두 연결 표현 남용** | 「이를 통해 ~. 나아가 ~. 아울러 ~」 | 문장 순서로 흐름을 만듦 |
+| 35 | **무생물 행위주** | 「데이터가 말해준다」 「시장이 원한다」 | 판단 주체를 밝히거나 사실만 남김 |
 
 ## 전체 예시
 
@@ -201,8 +203,11 @@ After가 원문에 없는 사실(어떤 기술을 썼는지, 무엇이 막혔는
 
 [blader/humanizer](https://github.com/blader/humanizer) v2.9.1을 기반으로 하며, 원본은 WikiProject AI Cleanup이 관리하는 [Wikipedia:Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing)에 바탕을 둡니다. 한국어에 그대로 적용되지 않는 패턴(§14 em dash 단독 초점, §17 Title Case, §19 곱슬 따옴표, §26 하이픈 복합어)은 한국어 고유 티(문장부호 전반, 문체 혼용, 번역투 대명사·복수, 번역투 구문)로 교체했습니다. 나머지 패턴은 개념을 유지하되 감시 표현과 예시를 전부 한국어로 다시 썼습니다.
 
+1.1.0에서 더한 패턴 일부(문두 연결 표현, 무생물 행위주, 「~적」 접미사 밀도, 결론 신호어)와 밀도 기준은 [devswha/patina](https://github.com/devswha/patina)(MIT)의 한국어 패턴 팩에서 착안했습니다. 문구를 옮기지 않고 예시는 새로 썼습니다.
+
 ## 버전 이력
 
+- **1.1.0** (2026-08-16): 한국어에서 흔한 티를 보강해 35개로. 문두 연결 표현 남용(§34)과 무생물 행위주(§35)를 신설하고, 「~적」 접미사 밀도와 「~고 있다」 진행형 남발, 결론 신호어, 「보다 ~한」 직역투를 기존 패턴에 통합했습니다. 판정 지침에 밀도 기준을 신설해 한 번 나온 표현을 티로 잡지 않도록 했습니다. 오탐 결함 세 건도 고쳤습니다. 「2025년 기준」 같은 데이터 기준연도를 §21이 잡던 문제, 원문에 실제로 세 항목이 있을 때 §10이 삼분법으로 오인하던 문제, §5의 귀속 처리 판정이 애매했던 문제입니다. 보강 항목 일부는 [devswha/patina](https://github.com/devswha/patina)(MIT)의 한국어 패턴 팩에서 착안했습니다.
 - **1.0.0** (2026-08-13): 최초 공개. blader/humanizer v2.9.1을 포크해 33개 패턴 전체를 한국어 전용으로 재설계. 영어 전용 패턴 4개(§14 일부, §17, §19, §26)를 이중 피동·문체 혼용·번역투 패턴으로 교체하고, 오탐 방지 가이드를 한국어 글쓰기 관습(합쇼체, 피동, 만연체, 한자어 문어체)에 맞게 다시 작성. 지침 본문을 한국어로 전환.
 
 ## 라이선스
