@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "humanizer-ko",
   "description": "한국어 텍스트에서 AI 생성 글의 티를 찾아 제거해 자연스러운 사람의 문장으로 다듬는다. Remove signs of AI-generated writing from Korean text. blader/humanizer의 한국어 재설계판.",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "author": {
     "name": "IsaacEryn",
     "url": "https://github.com/IsaacEryn"

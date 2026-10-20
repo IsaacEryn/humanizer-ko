@@ -10,7 +10,7 @@
 
 ## 주요 파일
 
-- `SKILL.md` — 스킬 본체. 이식 가능한 YAML frontmatter(`name`, `description`, `license`, `metadata.version`)와 번호 붙은 패턴 목록(Before/After 예시 포함). **이 파일이 진실의 원천이다.**
+- `SKILL.md` — 스킬 본체. 500줄 예산이 차 있어 긴 보조 절은 `references/`로 뺀다(지금은 `references/spoken-scripts.md`). 이식 가능한 YAML frontmatter(`name`, `description`, `license`, `metadata.version`)와 번호 붙은 패턴 목록(Before/After 예시 포함). **이 파일이 진실의 원천이다.**
 - `README.md` — 사람용: 설치, 사용법, 패턴 요약 표, 버전 이력. 한국어 우선, 영어 요약 병행.
 - `.claude-plugin/plugin.json` — 선택적 Claude Code 플러그인 매니페스트.
 - `.claude-plugin/marketplace.json` — `/plugin marketplace add IsaacEryn/humanizer-ko`가 동작하게 하는 단일 저장소 마켓플레이스 항목.
@@ -20,7 +20,7 @@
 
 `SKILL.md`와 `README.md`는 동기화를 유지해야 한다. 동작이나 내용을 바꿀 때:
 
-- **패턴:** 스킬은 현재 **35개 번호 패턴**을 정의한다. 추가·삭제·번호 변경 시 README 패턴 표와 「35개 탐지 패턴」 제목, 본문의 모든 상호 참조(§N)를 같은 변경에서 함께 고친다. 의도적인 재번호가 아니면 번호를 유지한다. 검증 스크립트가 패턴 번호를 순서까지 비교하므로 새 패턴은 마지막 번호 뒤에 붙인다.
+- **패턴:** 스킬은 현재 **37개 번호 패턴**을 정의한다. 추가·삭제·번호 변경 시 README 패턴 표와 「37개 탐지 패턴」 제목, 본문의 모든 상호 참조(§N)를 같은 변경에서 함께 고친다. 의도적인 재번호가 아니면 번호를 유지한다. 검증 스크립트가 패턴 번호를 순서까지 비교하므로 새 패턴은 마지막 번호 뒤에 붙인다.
 - **버전:** `SKILL.md` frontmatter의 `metadata.version`, `README.md`의 「버전 이력」, `.claude-plugin/plugin.json`의 `version` 세 곳을 함께 올린다. 스킬 버전은 `metadata` 아래에 둔다. 최상위 `version` 키는 Agent Skills 호스트 간 이식성이 없다. (`marketplace.json`은 의도적으로 버전을 생략해 `plugin.json`이 패키지의 단일 출처가 되게 한다.)
 - **호환성:** 설치·사용 문구를 하네스 중립으로 유지한다. Markdown 스킬 지침을 읽을 수 있는 어떤 하네스에서도 동작해야 하며, Claude Code·OpenCode·Codex 등은 예시이지 한계가 아니다.
 - **검증:** 게시 전에 `python3 scripts/validate-package.py`, `npx skills add . --list`, `claude plugin validate .`를 실행한다.
