@@ -10,7 +10,7 @@
 
 ## 주요 파일
 
-- `SKILL.md` — 스킬 본체. 500줄 예산이 차 있어 긴 보조 절은 `references/`로 뺀다(지금은 `references/spoken-scripts.md`). 이식 가능한 YAML frontmatter(`name`, `description`, `license`, `metadata.version`)와 번호 붙은 패턴 목록(Before/After 예시 포함). **이 파일이 진실의 원천이다.**
+- `SKILL.md` — 스킬 본체. 500줄 예산이 차 있어 긴 보조 절은 `references/`로 뺀다(지금은 발표 대본용 `references/spoken-scripts.md`와 학술 원고용 `references/academic-papers.md`). 이식 가능한 YAML frontmatter(`name`, `description`, `license`, `metadata.version`)와 번호 붙은 패턴 목록(Before/After 예시 포함). **이 파일이 진실의 원천이다.**
 - `README.md` — 사람용: 설치, 사용법, 패턴 요약 표, 버전 이력. 한국어 우선, 영어 요약 병행.
 - `.claude-plugin/plugin.json` — 선택적 Claude Code 플러그인 매니페스트.
 - `.claude-plugin/marketplace.json` — `/plugin marketplace add IsaacEryn/humanizer-ko`가 동작하게 하는 단일 저장소 마켓플레이스 항목.
